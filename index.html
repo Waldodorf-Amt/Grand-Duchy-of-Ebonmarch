@@ -7,23 +7,28 @@
 
   <style>
     :root {
-      --bg: #121212;
-      --panel: #1e1b18;
-      --panel-2: #27231f;
-      --panel-3: #332d27;
-      --text: #f4efe6;
-      --muted: #b9aa98;
-      --gold: #d6a94a;
-      --gold-2: #f0c96a;
-      --red: #7f1d1d;
-      --red-2: #a92828;
-      --border: rgba(214, 169, 74, 0.35);
-      --shadow: rgba(0, 0, 0, 0.45);
+      --bg: #130d0c;
+      --page-bg: #170f0d;
+      --panel: #1f1714;
+      --panel-2: #281b17;
+      --panel-3: #34231c;
+      --text: #f6ead8;
+      --muted: #c7b59c;
+      --gold: #d4a33a;
+      --gold-2: #f2cf72;
+      --red: #641b1b;
+      --red-2: #8f2626;
+      --deep-red: #3b1212;
+      --black: #0b0908;
+      --border: rgba(212, 163, 58, 0.42);
+      --border-soft: rgba(212, 163, 58, 0.18);
+      --shadow: rgba(0, 0, 0, 0.55);
       --good: #89c46f;
       --warn: #e0b057;
       --danger: #d66a6a;
       --radius: 16px;
-      --card-size: 120px;
+      --card-size: 104px;
+      --grid-panel-height: calc(100vh - 295px);
     }
 
     * {
@@ -32,12 +37,14 @@
 
     body {
       margin: 0;
-      min-height: 100vh;
+      height: 100vh;
+      overflow: hidden;
       font-family: Georgia, "Times New Roman", serif;
       color: var(--text);
       background:
-        radial-gradient(circle at top left, rgba(127, 29, 29, 0.4), transparent 35%),
-        linear-gradient(135deg, #0d0d0d 0%, #17120f 45%, #25150f 100%);
+        radial-gradient(circle at top left, rgba(143, 38, 38, 0.45), transparent 32%),
+        radial-gradient(circle at bottom right, rgba(212, 163, 58, 0.12), transparent 30%),
+        linear-gradient(135deg, var(--black) 0%, var(--page-bg) 48%, #25100d 100%);
     }
 
     button,
@@ -47,9 +54,13 @@
     }
 
     .page-shell {
-      width: min(1500px, calc(100% - 28px));
+      width: min(1540px, calc(100% - 28px));
+      height: 100vh;
       margin: 0 auto;
-      padding: 20px 0 40px;
+      padding: 14px 0;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      gap: 14px;
     }
 
     .hero {
@@ -57,12 +68,11 @@
       grid-template-columns: 1fr auto;
       gap: 16px;
       align-items: center;
-      padding: 20px;
-      margin-bottom: 16px;
+      padding: 16px 20px;
       border: 1px solid var(--border);
       border-radius: var(--radius);
       background:
-        linear-gradient(135deg, rgba(127, 29, 29, 0.8), rgba(30, 27, 24, 0.95)),
+        linear-gradient(135deg, rgba(100, 27, 27, 0.92), rgba(31, 23, 20, 0.96)),
         var(--panel);
       box-shadow: 0 12px 35px var(--shadow);
     }
@@ -113,31 +123,29 @@
     }
 
     .layout {
+      min-height: 0;
       display: grid;
       grid-template-columns: minmax(0, 1fr) 390px;
       gap: 16px;
-      align-items: start;
+      align-items: stretch;
     }
 
     .panel {
+      min-height: 0;
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      background: rgba(30, 27, 24, 0.94);
+      background: rgba(31, 23, 20, 0.96);
       box-shadow: 0 10px 30px var(--shadow);
       overflow: hidden;
     }
 
     .filters {
-      position: sticky;
-      top: 0;
-      z-index: 5;
       padding: 14px;
       display: grid;
-      grid-template-columns: repeat(5, minmax(130px, 1fr));
+      grid-template-columns: 1.2fr repeat(4, minmax(120px, 1fr));
       gap: 10px;
       border-bottom: 1px solid var(--border);
-      background: rgba(30, 27, 24, 0.98);
-      backdrop-filter: blur(10px);
+      background: linear-gradient(180deg, rgba(52, 35, 28, 0.98), rgba(31, 23, 20, 0.98));
     }
 
     .filter-field {
@@ -203,21 +211,38 @@
     .player-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(var(--card-size), 1fr));
-      gap: 10px;
+      gap: 9px;
       padding: 14px;
-      min-height: 240px;
+      height: var(--grid-panel-height);
+      min-height: 260px;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      scrollbar-color: var(--gold) rgba(0,0,0,0.25);
+    }
+
+    .player-grid::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    .player-grid::-webkit-scrollbar-track {
+      background: rgba(0,0,0,0.22);
+    }
+
+    .player-grid::-webkit-scrollbar-thumb {
+      background: rgba(212, 163, 58, 0.7);
+      border-radius: 999px;
     }
 
     .player-card {
       min-height: var(--card-size);
-      border: 1px solid rgba(214, 169, 74, 0.28);
-      border-radius: 14px;
+      border: 1px solid rgba(212, 163, 58, 0.28);
+      border-radius: 13px;
       color: var(--text);
       background:
-        linear-gradient(145deg, rgba(51, 45, 39, 0.95), rgba(20, 18, 16, 0.96));
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03), 0 8px 18px rgba(0,0,0,0.25);
+        linear-gradient(145deg, rgba(52, 35, 28, 0.98), rgba(18, 13, 12, 0.98));
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03), 0 7px 16px rgba(0,0,0,0.25);
       cursor: pointer;
-      padding: 10px;
+      padding: 9px;
       display: grid;
       grid-template-rows: 1fr auto;
       align-items: center;
@@ -280,15 +305,22 @@
     }
 
     .detail-panel {
-      position: sticky;
-      top: 16px;
+      height: 100%;
+      max-height: calc(100vh - 128px);
+      min-height: 0;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      overflow: hidden;
     }
 
     .detail-header {
       padding: 18px;
       border-bottom: 1px solid var(--border);
       background:
-        linear-gradient(135deg, rgba(127, 29, 29, 0.55), rgba(0,0,0,0.12));
+        linear-gradient(135deg, rgba(100, 27, 27, 0.72), rgba(0,0,0,0.18));
+      position: sticky;
+      top: 0;
+      z-index: 2;
     }
 
     .detail-header h2 {
@@ -305,7 +337,26 @@
     .detail-body {
       padding: 16px;
       display: grid;
+      align-content: start;
       gap: 14px;
+      overflow-y: auto;
+      min-height: 0;
+      max-height: 100%;
+      overscroll-behavior: contain;
+      scrollbar-color: var(--gold) rgba(0,0,0,0.25);
+    }
+
+    .detail-body::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    .detail-body::-webkit-scrollbar-track {
+      background: rgba(0,0,0,0.22);
+    }
+
+    .detail-body::-webkit-scrollbar-thumb {
+      background: rgba(212, 163, 58, 0.7);
+      border-radius: 999px;
     }
 
     .section {
@@ -329,6 +380,23 @@
       color: var(--muted);
       display: grid;
       gap: 8px;
+      max-height: 260px;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      scrollbar-color: var(--gold) rgba(0,0,0,0.25);
+    }
+
+    .section-content::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .section-content::-webkit-scrollbar-track {
+      background: rgba(0,0,0,0.18);
+    }
+
+    .section-content::-webkit-scrollbar-thumb {
+      background: rgba(212, 163, 58, 0.62);
+      border-radius: 999px;
     }
 
     .item-row {
@@ -364,12 +432,27 @@
     }
 
     @media (max-width: 1050px) {
+      body {
+        height: auto;
+        min-height: 100vh;
+        overflow: auto;
+      }
+
+      .page-shell {
+        height: auto;
+      }
+
       .layout {
         grid-template-columns: 1fr;
       }
 
+      .player-grid {
+        height: 58vh;
+      }
+
       .detail-panel {
-        position: static;
+        height: 75vh;
+        max-height: 75vh;
       }
     }
 
@@ -385,7 +468,7 @@
 
     @media (max-width: 560px) {
       :root {
-        --card-size: 104px;
+        --card-size: 96px;
       }
 
       .page-shell {
@@ -400,12 +483,25 @@
 
       .filters {
         grid-template-columns: 1fr;
-        position: static;
       }
 
       .grid-tools {
         align-items: flex-start;
         flex-direction: column;
+      }
+
+      .player-grid {
+        height: 50vh;
+        gap: 8px;
+      }
+
+      .detail-panel {
+        height: 70vh;
+        max-height: 70vh;
+      }
+
+      .section-content {
+        max-height: 220px;
       }
     }
   </style>
@@ -649,13 +745,13 @@
         selectPlayer(card.dataset.id);
       });
 
-      window.addEventListener("scroll", throttle(() => {
-        const nearBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 700;
+      els.playerGrid.addEventListener("scroll", throttle(() => {
+        const nearBottom = els.playerGrid.scrollTop + els.playerGrid.clientHeight >= els.playerGrid.scrollHeight - 250;
         if (nearBottom && visibleCount < filteredPlayers.length) {
           visibleCount += PAGE_SIZE;
           renderGrid(false);
         }
-      }, 250));
+      }, 180));
     }
 
     /******************************************************************
