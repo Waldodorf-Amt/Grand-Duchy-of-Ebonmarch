@@ -1,1 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ebonmarch ORK Dashboard</title>
+
+  <style>
+    :root {
+      --bg: #121212;
+      --panel: #1e1b18;
+      --panel-2: #27231f;
+      --panel-3: #332d27;
+      --text: #f4efe6;
+      --muted: #b9aa98;
+      --gold: #d6a94a;
+      --gold-2: #f0c96a;
+      --red: #7f1d1d;
+      --red-2: #a92828;
+      --border: rgba(214, 169, 74, 0.35);
+      --shadow: rgba(0, 0, 0, 0.45);
+      --good: #89c46f;
+      --warn: #e0b057;
+      --danger: #d66a6a;
+      --radius: 16px;
+      --card-size: 120px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(127, 29, 29, 0.4), transparent 35%),
+        linear-gradient(135deg, #0d0d0d 0%, #17120f 45%, #25150f 100%);
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    .page-shell {
+      width: min(1500px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 20px 0 40px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: center;
+      padding: 20px;
+      margin-bottom: 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(135deg, rgba(127, 29, 29, 0.8), rgba(30, 27, 24, 0.95)),
+        var(--panel);
+      box-shadow: 0 12px 35px var(--shadow);
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(1.7rem, 4vw, 3rem);
+      line-height: 1;
+      letter-spacing: 0.03em;
+      color: var(--gold-2);
+      text-shadow: 0 2px 2px rgba(0,0,0,0.5);
+    }
+
+    .hero p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      max-width: 850px;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--gold-2);
+      background: rgba(0,0,0,0.22);
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--warn);
+      box-shadow: 0 0 10px var(--warn);
+    }
+
+    .dot.ready {
+      background: var(--good);
+      box-shadow: 0 0 10px var(--good);
+    }
+
+    .dot.error {
+      background: var(--danger);
+      box-shadow: 0 0 10px var(--danger);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 390px;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .panel {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: rgba(30, 27, 24, 0.94);
+      box-shadow: 0 10px 30px var(--shadow);
+      overflow: hidden;
+    }
+
+    .filters {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      padding: 14px;
+      display: grid;
+      grid-template-columns: repeat(5, minmax(130px, 1fr));
+      gap: 10px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(30, 27, 24, 0.98);
+      backdrop-filter: blur(10px);
+    }
+
+    .filter-field {
+      display: grid;
+      gap: 5px;
+    }
+
+    .filter-field label {
+      font-size: 0.78rem;
+      color: var(--gold-2);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .filter-field input,
+    .filter-field select {
+      width: 100%;
+      min-height: 40px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px 10px;
+      color: var(--text);
+      background: #15120f;
+      outline: none;
+    }
+
+    .filter-field input:focus,
+    .filter-field select:focus {
+      border-color: var(--gold-2);
+      box-shadow: 0 0 0 3px rgba(214, 169, 74, 0.16);
+    }
+
+    .grid-tools {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(214, 169, 74, 0.18);
+      color: var(--muted);
+      background: rgba(0,0,0,0.14);
+    }
+
+    .grid-tools strong {
+      color: var(--gold-2);
+    }
+
+    .clear-btn,
+    .load-more-btn {
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--gold-2);
+      background: rgba(127, 29, 29, 0.45);
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+
+    .clear-btn:hover,
+    .load-more-btn:hover {
+      background: rgba(169, 40, 40, 0.65);
+    }
+
+    .player-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(var(--card-size), 1fr));
+      gap: 10px;
+      padding: 14px;
+      min-height: 240px;
+    }
+
+    .player-card {
+      min-height: var(--card-size);
+      border: 1px solid rgba(214, 169, 74, 0.28);
+      border-radius: 14px;
+      color: var(--text);
+      background:
+        linear-gradient(145deg, rgba(51, 45, 39, 0.95), rgba(20, 18, 16, 0.96));
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03), 0 8px 18px rgba(0,0,0,0.25);
+      cursor: pointer;
+      padding: 10px;
+      display: grid;
+      grid-template-rows: 1fr auto;
+      align-items: center;
+      text-align: center;
+      transition: transform 0.12s ease, border-color 0.12s ease, background 0.12s ease;
+    }
+
+    .player-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--gold-2);
+    }
+
+    .player-card.selected {
+      border-color: var(--gold-2);
+      background:
+        linear-gradient(145deg, rgba(127, 29, 29, 0.95), rgba(36, 23, 17, 0.98));
+      box-shadow: 0 0 0 2px rgba(214, 169, 74, 0.22), 0 12px 25px rgba(0,0,0,0.35);
+    }
+
+    .player-name {
+      font-weight: 700;
+      line-height: 1.15;
+      overflow-wrap: anywhere;
+    }
+
+    .player-park {
+      margin-top: 8px;
+      font-size: 0.77rem;
+      color: var(--muted);
+    }
+
+    .badges {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 8px;
+    }
+
+    .badge {
+      min-width: 22px;
+      border: 1px solid rgba(214, 169, 74, 0.35);
+      border-radius: 999px;
+      padding: 2px 6px;
+      color: var(--gold-2);
+      background: rgba(0,0,0,0.22);
+      font-size: 0.7rem;
+    }
+
+    .load-more-wrap {
+      display: flex;
+      justify-content: center;
+      padding: 0 14px 18px;
+    }
+
+    .empty-state {
+      padding: 45px 20px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .detail-panel {
+      position: sticky;
+      top: 16px;
+    }
+
+    .detail-header {
+      padding: 18px;
+      border-bottom: 1px solid var(--border);
+      background:
+        linear-gradient(135deg, rgba(127, 29, 29, 0.55), rgba(0,0,0,0.12));
+    }
+
+    .detail-header h2 {
+      margin: 0;
+      color: var(--gold-2);
+      font-size: 1.55rem;
+    }
+
+    .detail-header p {
+      margin: 6px 0 0;
+      color: var(--muted);
+    }
+
+    .detail-body {
+      padding: 16px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .section {
+      border: 1px solid rgba(214, 169, 74, 0.18);
+      border-radius: 12px;
+      background: rgba(0,0,0,0.14);
+      overflow: hidden;
+    }
+
+    .section h3 {
+      margin: 0;
+      padding: 10px 12px;
+      color: var(--gold-2);
+      font-size: 1rem;
+      background: rgba(0,0,0,0.18);
+      border-bottom: 1px solid rgba(214, 169, 74, 0.16);
+    }
+
+    .section-content {
+      padding: 10px 12px;
+      color: var(--muted);
+      display: grid;
+      gap: 8px;
+    }
+
+    .item-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: baseline;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .item-row:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .item-row strong {
+      color: var(--text);
+    }
+
+    .item-row span {
+      color: var(--gold-2);
+      font-size: 0.86rem;
+    }
+
+    .small-note {
+      font-size: 0.86rem;
+      color: var(--muted);
+    }
+
+    .loading-line {
+      color: var(--gold-2);
+    }
+
+    @media (max-width: 1050px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .detail-panel {
+        position: static;
+      }
+    }
+
+    @media (max-width: 850px) {
+      .hero {
+        grid-template-columns: 1fr;
+      }
+
+      .filters {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 560px) {
+      :root {
+        --card-size: 104px;
+      }
+
+      .page-shell {
+        width: min(100% - 16px, 1500px);
+        padding-top: 8px;
+      }
+
+      .hero,
+      .panel {
+        border-radius: 12px;
+      }
+
+      .filters {
+        grid-template-columns: 1fr;
+        position: static;
+      }
+
+      .grid-tools {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page-shell">
+    <header class="hero">
+      <div>
+        <h1>Ebonmarch ORK Dashboard</h1>
+        <p>Search, filter, and view player awards without forcing the full kingdom dataset to render at once.</p>
+      </div>
+      <div class="status-pill" aria-live="polite">
+        <span id="statusDot" class="dot"></span>
+        <span id="statusText">Loading index...</span>
+      </div>
+    </header>
+
+    <section class="layout">
+      <div class="panel">
+        <form class="filters" id="filters">
+          <div class="filter-field">
+            <label for="searchInput">Search</label>
+            <input id="searchInput" type="search" placeholder="Persona or player name" autocomplete="off" />
+          </div>
+
+          <div class="filter-field">
+            <label for="parkFilter">Park</label>
+            <select id="parkFilter">
+              <option value="">Any Park</option>
+            </select>
+          </div>
+
+          <div class="filter-field">
+            <label for="awardFilter">Award</label>
+            <select id="awardFilter">
+              <option value="">Any Award</option>
+            </select>
+          </div>
+
+          <div class="filter-field">
+            <label for="masterhoodFilter">Masterhood</label>
+            <select id="masterhoodFilter">
+              <option value="">Any Masterhood</option>
+            </select>
+          </div>
+
+          <div class="filter-field">
+            <label for="paragonFilter">Paragon</label>
+            <select id="paragonFilter">
+              <option value="">Any Paragon</option>
+            </select>
+          </div>
+        </form>
+
+        <div class="grid-tools">
+          <div>
+            Showing <strong id="showingCount">0</strong> of <strong id="totalCount">0</strong> matching players
+            <span class="small-note" id="updatedAt"></span>
+          </div>
+          <button class="clear-btn" id="clearFilters" type="button">Clear filters</button>
+        </div>
+
+        <div id="playerGrid" class="player-grid" aria-live="polite"></div>
+
+        <div class="load-more-wrap">
+          <button class="load-more-btn" id="loadMoreBtn" type="button" hidden>Load more</button>
+        </div>
+      </div>
+
+      <aside class="panel detail-panel" id="detailPanel">
+        <div class="detail-header">
+          <h2>Select a player</h2>
+          <p>Player details load only when a card is selected.</p>
+        </div>
+        <div class="detail-body">
+          <div class="section">
+            <h3>Performance Mode</h3>
+            <div class="section-content">
+              <div>This page loads a small index first, then requests detailed awards only when needed.</div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    "use strict";
+
+    /******************************************************************
+     * CONFIG
+     * Replace this with your deployed Apps Script web app URL.
+     ******************************************************************/
+    const API_URL = "https://script.google.com/macros/s/AKfycbyDBfJzYZwHVZl3INXGX1Lb_SZZXnhADwiEnjZ8XGpzhzQ_KfFSzF8Ked1_0GDMEghH/exec";
+
+    /******************************************************************
+     * STATE
+     ******************************************************************/
+    const PAGE_SIZE = 60;
+
+    let allPlayers = [];
+    let filteredPlayers = [];
+    let visibleCount = PAGE_SIZE;
+    let selectedPlayerId = null;
+
+    const detailCache = new Map();
+
+    const els = {
+      statusDot: document.getElementById("statusDot"),
+      statusText: document.getElementById("statusText"),
+      filters: document.getElementById("filters"),
+      searchInput: document.getElementById("searchInput"),
+      parkFilter: document.getElementById("parkFilter"),
+      awardFilter: document.getElementById("awardFilter"),
+      masterhoodFilter: document.getElementById("masterhoodFilter"),
+      paragonFilter: document.getElementById("paragonFilter"),
+      clearFilters: document.getElementById("clearFilters"),
+      playerGrid: document.getElementById("playerGrid"),
+      showingCount: document.getElementById("showingCount"),
+      totalCount: document.getElementById("totalCount"),
+      updatedAt: document.getElementById("updatedAt"),
+      loadMoreBtn: document.getElementById("loadMoreBtn"),
+      detailPanel: document.getElementById("detailPanel")
+    };
+
+    /******************************************************************
+     * JSONP LOADER
+     ******************************************************************/
+    function jsonp(url, params = {}) {
+      return new Promise((resolve, reject) => {
+        const callbackName = "orkJsonp_" + Date.now() + "_" + Math.random().toString(36).slice(2);
+        const script = document.createElement("script");
+        const query = new URLSearchParams({ ...params, callback: callbackName });
+
+        let timeoutId;
+
+        window[callbackName] = data => {
+          clearTimeout(timeoutId);
+          cleanup();
+          resolve(data);
+        };
+
+        function cleanup() {
+          delete window[callbackName];
+          script.remove();
+        }
+
+        script.onerror = () => {
+          clearTimeout(timeoutId);
+          cleanup();
+          reject(new Error("Could not load data from Apps Script."));
+        };
+
+        timeoutId = setTimeout(() => {
+          cleanup();
+          reject(new Error("Data request timed out."));
+        }, 30000);
+
+        script.src = url + "?" + query.toString();
+        document.body.appendChild(script);
+      });
+    }
+
+    /******************************************************************
+     * INIT
+     ******************************************************************/
+    init();
+
+    async function init() {
+      setStatus("loading", "Loading index...");
+
+      try {
+        const data = await jsonp(API_URL, { action: "index" });
+        hydrateIndex(data);
+        setStatus("ready", "Ready");
+      } catch (err) {
+        console.error(err);
+        setStatus("error", "Load failed");
+        renderEmpty("Could not load the ORK dashboard index. Check the Apps Script URL and deployment permissions.");
+      }
+    }
+
+    function hydrateIndex(data) {
+      allPlayers = normalizePlayers(data.players || data || []);
+      filteredPlayers = allPlayers.slice();
+
+      populateSelect(els.parkFilter, data.parks || uniqueFlat(allPlayers.map(p => p.park)), "Any Park");
+      populateSelect(els.awardFilter, data.awardTypes || uniqueFlat(allPlayers.flatMap(p => p.awardKeys || [])), "Any Award");
+      populateSelect(els.masterhoodFilter, data.masterhoodTypes || uniqueFlat(allPlayers.flatMap(p => p.masterhoodKeys || [])), "Any Masterhood");
+      populateSelect(els.paragonFilter, data.paragonTypes || uniqueFlat(allPlayers.flatMap(p => p.paragonKeys || [])), "Any Paragon");
+
+      if (data.updatedAt) {
+        els.updatedAt.textContent = " · Updated " + formatDate(data.updatedAt);
+      }
+
+      applyFilters();
+      bindEvents();
+    }
+
+    function normalizePlayers(players) {
+      return players.map(p => ({
+        id: String(p.id || p.playerId || p.PlayerId || p.orkId || p.name || p.persona),
+        name: String(p.name || p.persona || p.Persona || p.Player || "Unknown Player"),
+        park: String(p.park || p.Park || "Unknown Park"),
+        lastSignIn: p.lastSignIn || p.LastSignIn || "",
+        awardKeys: arrayify(p.awardKeys || p.awardsSummary || p.awards || []),
+        masterhoodKeys: arrayify(p.masterhoodKeys || p.masterhoodsSummary || p.masterhoods || []),
+        paragonKeys: arrayify(p.paragonKeys || p.paragonsSummary || p.paragons || []),
+        hasAwards: Boolean(p.hasAwards || (p.awardKeys && p.awardKeys.length)),
+        hasMasterhoods: Boolean(p.hasMasterhoods || (p.masterhoodKeys && p.masterhoodKeys.length)),
+        hasParagons: Boolean(p.hasParagons || (p.paragonKeys && p.paragonKeys.length))
+      })).sort((a, b) => a.name.localeCompare(b.name));
+    }
+
+    /******************************************************************
+     * EVENTS
+     ******************************************************************/
+    function bindEvents() {
+      const debouncedFilters = debounce(applyFilters, 120);
+
+      els.filters.addEventListener("input", debouncedFilters);
+      els.filters.addEventListener("change", debouncedFilters);
+
+      els.clearFilters.addEventListener("click", () => {
+        els.searchInput.value = "";
+        els.parkFilter.value = "";
+        els.awardFilter.value = "";
+        els.masterhoodFilter.value = "";
+        els.paragonFilter.value = "";
+        applyFilters();
+      });
+
+      els.loadMoreBtn.addEventListener("click", () => {
+        visibleCount += PAGE_SIZE;
+        renderGrid(false);
+      });
+
+      els.playerGrid.addEventListener("click", event => {
+        const card = event.target.closest(".player-card");
+        if (!card) return;
+        selectPlayer(card.dataset.id);
+      });
+
+      window.addEventListener("scroll", throttle(() => {
+        const nearBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 700;
+        if (nearBottom && visibleCount < filteredPlayers.length) {
+          visibleCount += PAGE_SIZE;
+          renderGrid(false);
+        }
+      }, 250));
+    }
+
+    /******************************************************************
+     * FILTERING
+     ******************************************************************/
+    function applyFilters() {
+      const term = els.searchInput.value.trim().toLowerCase();
+      const park = els.parkFilter.value;
+      const award = els.awardFilter.value;
+      const masterhood = els.masterhoodFilter.value;
+      const paragon = els.paragonFilter.value;
+
+      filteredPlayers = allPlayers.filter(player => {
+        if (term) {
+          const haystack = `${player.name} ${player.park}`.toLowerCase();
+          if (!haystack.includes(term)) return false;
+        }
+
+        if (park && player.park !== park) return false;
+        if (award && !player.awardKeys.includes(award)) return false;
+        if (masterhood && !player.masterhoodKeys.includes(masterhood)) return false;
+        if (paragon && !player.paragonKeys.includes(paragon)) return false;
+
+        return true;
+      });
+
+      visibleCount = PAGE_SIZE;
+      renderGrid(true);
+    }
+
+    /******************************************************************
+     * GRID RENDERING
+     ******************************************************************/
+    function renderGrid(reset = false) {
+      if (reset) {
+        els.playerGrid.innerHTML = "";
+      }
+
+      if (!filteredPlayers.length) {
+        renderEmpty("No players match the current filters.");
+        updateCounts();
+        return;
+      }
+
+      const alreadyRendered = reset ? 0 : els.playerGrid.children.length;
+      const nextPlayers = filteredPlayers.slice(alreadyRendered, visibleCount);
+      const fragment = document.createDocumentFragment();
+
+      nextPlayers.forEach(player => {
+        fragment.appendChild(createPlayerCard(player));
+      });
+
+      els.playerGrid.appendChild(fragment);
+      updateCounts();
+    }
+
+    function createPlayerCard(player) {
+      const card = document.createElement("button");
+      card.type = "button";
+      card.className = "player-card";
+      card.dataset.id = player.id;
+
+      if (player.id === selectedPlayerId) {
+        card.classList.add("selected");
+      }
+
+      const badges = [];
+      if (player.awardKeys.length || player.hasAwards) badges.push("A");
+      if (player.masterhoodKeys.length || player.hasMasterhoods) badges.push("M");
+      if (player.paragonKeys.length || player.hasParagons) badges.push("P");
+
+      card.innerHTML = `
+        <div>
+          <div class="player-name">${escapeHtml(player.name)}</div>
+          <div class="player-park">${escapeHtml(player.park)}</div>
+        </div>
+        <div class="badges">
+          ${badges.map(b => `<span class="badge">${b}</span>`).join("")}
+        </div>
+      `;
+
+      return card;
+    }
+
+    function updateCounts() {
+      const showing = Math.min(visibleCount, filteredPlayers.length);
+      els.showingCount.textContent = String(showing);
+      els.totalCount.textContent = String(filteredPlayers.length);
+      els.loadMoreBtn.hidden = showing >= filteredPlayers.length;
+    }
+
+    function renderEmpty(message) {
+      els.playerGrid.innerHTML = `<div class="empty-state">${escapeHtml(message)}</div>`;
+      els.loadMoreBtn.hidden = true;
+    }
+
+    /******************************************************************
+     * DETAIL PANEL
+     ******************************************************************/
+    async function selectPlayer(id) {
+      selectedPlayerId = id;
+
+      document.querySelectorAll(".player-card.selected").forEach(card => {
+        card.classList.remove("selected");
+      });
+
+      const selectedCard = els.playerGrid.querySelector(`[data-id="${cssEscape(id)}"]`);
+      if (selectedCard) selectedCard.classList.add("selected");
+
+      const indexPlayer = allPlayers.find(player => player.id === id);
+      renderDetailLoading(indexPlayer);
+
+      if (detailCache.has(id)) {
+        renderDetail(detailCache.get(id));
+        return;
+      }
+
+      try {
+        const detail = await jsonp(API_URL, { action: "detail", id });
+        const normalized = normalizeDetail(detail, indexPlayer);
+        detailCache.set(id, normalized);
+        renderDetail(normalized);
+      } catch (err) {
+        console.error(err);
+        renderDetailError(indexPlayer);
+      }
+    }
+
+    function normalizeDetail(detail, fallback = {}) {
+      return {
+        id: String(detail.id || fallback.id || ""),
+        name: String(detail.name || fallback.name || "Unknown Player"),
+        park: String(detail.park || fallback.park || "Unknown Park"),
+        lastSignIn: detail.lastSignIn || fallback.lastSignIn || "",
+        awards: arrayify(detail.awards || []),
+        masterhoods: arrayify(detail.masterhoods || []),
+        paragons: arrayify(detail.paragons || [])
+      };
+    }
+
+    function renderDetailLoading(player = {}) {
+      els.detailPanel.innerHTML = `
+        <div class="detail-header">
+          <h2>${escapeHtml(player.name || "Loading player")}</h2>
+          <p>${escapeHtml(player.park || "")}</p>
+        </div>
+        <div class="detail-body">
+          <div class="loading-line">Loading full player details...</div>
+        </div>
+      `;
+    }
+
+    function renderDetailError(player = {}) {
+      els.detailPanel.innerHTML = `
+        <div class="detail-header">
+          <h2>${escapeHtml(player.name || "Player")}</h2>
+          <p>${escapeHtml(player.park || "")}</p>
+        </div>
+        <div class="detail-body">
+          <div class="section">
+            <h3>Unable to load details</h3>
+            <div class="section-content">Check that Apps Script supports <strong>action=detail</strong> and returns JSONP.</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderDetail(player) {
+      els.detailPanel.innerHTML = `
+        <div class="detail-header">
+          <h2>${escapeHtml(player.name)}</h2>
+          <p>${escapeHtml(player.park)}${player.lastSignIn ? " · Last sign-in " + escapeHtml(formatDate(player.lastSignIn)) : ""}</p>
+        </div>
+        <div class="detail-body">
+          ${renderSection("Awards", player.awards)}
+          ${renderSection("Masterhoods", player.masterhoods)}
+          ${renderSection("Paragons", player.paragons)}
+        </div>
+      `;
+    }
+
+    function renderSection(title, items) {
+      const rows = arrayify(items);
+
+      if (!rows.length) {
+        return `
+          <div class="section">
+            <h3>${escapeHtml(title)}</h3>
+            <div class="section-content">None listed.</div>
+          </div>
+        `;
+      }
+
+      return `
+        <div class="section">
+          <h3>${escapeHtml(title)}</h3>
+          <div class="section-content">
+            ${rows.map(renderDetailRow).join("")}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderDetailRow(item) {
+      if (typeof item === "string") {
+        return `<div class="item-row"><strong>${escapeHtml(item)}</strong><span></span></div>`;
+      }
+
+      const name = item.name || item.award || item.title || item.type || "Award";
+      const rank = item.rank || item.level || item.count || item.date || "";
+
+      return `
+        <div class="item-row">
+          <strong>${escapeHtml(name)}</strong>
+          <span>${escapeHtml(String(rank))}</span>
+        </div>
+      `;
+    }
+
+    /******************************************************************
+     * HELPERS
+     ******************************************************************/
+    function setStatus(type, text) {
+      els.statusDot.className = "dot" + (type === "ready" ? " ready" : type === "error" ? " error" : "");
+      els.statusText.textContent = text;
+    }
+
+    function populateSelect(select, values, defaultLabel) {
+      const clean = uniqueFlat(values).filter(Boolean).sort((a, b) => a.localeCompare(b));
+      select.innerHTML = `<option value="">${escapeHtml(defaultLabel)}</option>` + clean.map(value => {
+        return `<option value="${escapeHtml(value)}">${escapeHtml(value)}</option>`;
+      }).join("");
+    }
+
+    function arrayify(value) {
+      if (!value) return [];
+      if (Array.isArray(value)) return value.filter(Boolean);
+      if (typeof value === "string") {
+        return value.split(/[|,;]/).map(v => v.trim()).filter(Boolean);
+      }
+      return [value];
+    }
+
+    function uniqueFlat(values) {
+      return [...new Set(values.flat().filter(Boolean).map(String))];
+    }
+
+    function debounce(fn, delay) {
+      let timeout;
+      return (...args) => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => fn(...args), delay);
+      };
+    }
+
+    function throttle(fn, delay) {
+      let waiting = false;
+      return (...args) => {
+        if (waiting) return;
+        waiting = true;
+        fn(...args);
+        setTimeout(() => waiting = false, delay);
+      };
+    }
+
+    function formatDate(value) {
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return String(value);
+      return date.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function cssEscape(value) {
+      if (window.CSS && CSS.escape) return CSS.escape(value);
+      return String(value).replace(/[^a-zA-Z0-9_-]/g, "\\$&");
+    }
+  </script>
+</body>
+</html>
 
