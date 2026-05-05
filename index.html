@@ -248,11 +248,10 @@
 
     .player-card {
       min-height: var(--card-size);
-      border: 1px solid rgba(212, 163, 58, 0.28);
+      border: 1px solid rgba(231,229,223,0.28);
       border-radius: 13px;
       color: var(--text);
-      background:
-        linear-gradient(145deg, rgba(71, 67, 77, 0.98), rgba(14, 14, 16, 0.98));
+      background: linear-gradient(145deg, rgba(71,67,77,0.98), rgba(14,14,16,0.98));
       box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03), 0 7px 16px rgba(0,0,0,0.25);
       cursor: pointer;
       padding: 9px;
@@ -260,7 +259,33 @@
       grid-template-rows: 1fr auto;
       align-items: center;
       text-align: center;
-      transition: transform 0.12s ease, border-color 0.12s ease, background 0.12s ease;
+    }
+
+    .compact .player-card {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      grid-template-rows: auto auto;
+      min-height: auto;
+      padding: 6px 8px;
+      text-align: left;
+      gap: 2px 6px;
+    }
+
+    .compact .player-name {
+      grid-column: 1;
+      font-size: 0.9rem;
+    }
+
+    .compact .player-park {
+      grid-column: 1;
+      font-size: 0.7rem;
+    }
+
+    .compact .badges {
+      grid-column: 2;
+      grid-row: 1 / span 2;
+      align-items: center;
+      justify-content: flex-end;
     }
 
     .player-card:hover {
@@ -297,12 +322,43 @@
 
     .badge {
       min-width: 22px;
-      border: 1px solid rgba(214, 169, 74, 0.35);
+      border: 1px solid rgba(231, 229, 223, 0.35);
       border-radius: 999px;
       padding: 2px 6px;
-      color: var(--gold-2);
-      background: rgba(0,0,0,0.22);
+      color: var(--silver);
+      background: rgba(0,0,0,0.26);
       font-size: 0.7rem;
+    }
+
+    .award-count {
+      display: none;
+      justify-self: end;
+      align-self: start;
+      min-width: 34px;
+      text-align: right;
+      color: var(--silver);
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .compact .award-count {
+      display: block;
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .compact .badges {
+      grid-column: 2;
+      grid-row: 2;
+      align-items: center;
+      justify-content: flex-end;
+      margin-top: 0;
+    }
+
+    .view-btn-active {
+      background: rgba(84, 66, 104, 0.9);
+      border-color: var(--silver);
+      color: var(--silver);
     }
 
     .load-more-wrap {
@@ -571,6 +627,11 @@
         </form>
 
         <div class="grid-tools">
+          <div style="display:flex;gap:8px;align-items:center;">
+            <button id="viewSquare" class="clear-btn view-btn-active" type="button">Square</button>
+            <button id="viewCompact" class="clear-btn" type="button">Compact</button>
+            <button id="sortAwards" class="clear-btn" type="button">Sort Awards</button>
+          </div>
           <div>
             Showing <strong id="showingCount">0</strong> of <strong id="totalCount">0</strong> matching players
             <span class="small-note" id="updatedAt"></span>
@@ -721,6 +782,7 @@
         name: String(p.name || p.persona || p.Persona || p.Player || "Unknown Player"),
         park: String(p.park || p.Park || "Unknown Park"),
         lastSignIn: p.lastSignIn || p.LastSignIn || "",
+        totalAwards: Number(p.totalAwards || p.TotalAwards || 0),
         awardKeys: arrayify(p.awardKeys || p.awardsSummary || p.awards || []),
         masterhoodKeys: arrayify(p.masterhoodKeys || p.masterhoodsSummary || p.masterhoods || []),
         paragonKeys: arrayify(p.paragonKeys || p.paragonsSummary || p.paragons || []),
@@ -734,6 +796,27 @@
      * EVENTS
      ******************************************************************/
     function bindEvents() {
+      document.getElementById("viewSquare").addEventListener("click", () => {
+        document.body.classList.remove("compact");
+        document.getElementById("viewSquare").classList.add("view-btn-active");
+        document.getElementById("viewCompact").classList.remove("view-btn-active");
+      });
+
+      document.getElementById("viewCompact").addEventListener("click", () => {
+        document.body.classList.add("compact");
+        document.getElementById("viewCompact").classList.add("view-btn-active");
+        document.getElementById("viewSquare").classList.remove("view-btn-active");
+      });
+
+      document.getElementById("sortAwards").addEventListener("click", () => {
+        filteredPlayers.sort((a, b) => {
+          const awardDiff = Number(b.totalAwards || 0) - Number(a.totalAwards || 0);
+          if (awardDiff !== 0) return awardDiff;
+          return a.name.localeCompare(b.name);
+        });
+        visibleCount = PAGE_SIZE;
+        renderGrid(true);
+      });
       const debouncedFilters = debounce(applyFilters, 120);
 
       els.filters.addEventListener("input", debouncedFilters);
@@ -837,11 +920,14 @@
       if (player.masterhoodKeys.length || player.hasMasterhoods) badges.push("M");
       if (player.paragonKeys.length || player.hasParagons) badges.push("P");
 
+      const totalAwards = Number(player.totalAwards || 0);
+
       card.innerHTML = `
         <div>
           <div class="player-name">${escapeHtml(player.name)}</div>
           <div class="player-park">${escapeHtml(player.park)}</div>
         </div>
+        <div class="award-count">${totalAwards}</div>
         <div class="badges">
           ${badges.map(b => `<span class="badge">${b}</span>`).join("")}
         </div>
