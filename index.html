@@ -7,25 +7,38 @@
 
   <style>
     :root {
-      --bg: #130d0c;
-      --page-bg: #170f0d;
-      --panel: #1f1714;
-      --panel-2: #281b17;
-      --panel-3: #34231c;
-      --text: #f6ead8;
-      --muted: #c7b59c;
-      --gold: #d4a33a;
-      --gold-2: #f2cf72;
-      --red: #641b1b;
-      --red-2: #8f2626;
-      --deep-red: #3b1212;
-      --black: #0b0908;
-      --border: rgba(212, 163, 58, 0.42);
-      --border-soft: rgba(212, 163, 58, 0.18);
-      --shadow: rgba(0, 0, 0, 0.55);
-      --good: #89c46f;
-      --warn: #e0b057;
-      --danger: #d66a6a;
+      /* EBONMARCH BANNER COLOR SCHEME */
+      --bg: #0b0b0d;
+      --page-bg: #15121a;
+      --panel: #242228;
+      --panel-2: #343139;
+      --panel-3: #47434d;
+
+      --text: #f2f0ec;
+      --muted: #c9c4bd;
+
+      /* Primary Ebonmarch Colors: purple, gray, black, silver */
+      --gold: #bfc0bd;
+      --gold-2: #f2f0ec;
+      --red: #544268;
+      --red-2: #6d5883;
+      --deep-red: #33283f;
+
+      --purple: #544268;
+      --purple-2: #6d5883;
+      --stone: #9c9c99;
+      --stone-dark: #5f5f5c;
+      --black: #050505;
+      --silver: #e7e5df;
+
+      --border: rgba(231, 229, 223, 0.38);
+      --border-soft: rgba(231, 229, 223, 0.16);
+      --shadow: rgba(0, 0, 0, 0.62);
+
+      --good: #9fbf8f;
+      --warn: #c6c1b8;
+      --danger: #c97a7a;
+
       --radius: 16px;
       --card-size: 104px;
       --grid-panel-height: calc(100vh - 295px);
@@ -42,9 +55,9 @@
       font-family: Georgia, "Times New Roman", serif;
       color: var(--text);
       background:
-        radial-gradient(circle at top left, rgba(143, 38, 38, 0.45), transparent 32%),
-        radial-gradient(circle at bottom right, rgba(212, 163, 58, 0.12), transparent 30%),
-        linear-gradient(135deg, var(--black) 0%, var(--page-bg) 48%, #25100d 100%);
+        radial-gradient(circle at top left, rgba(84, 66, 104, 0.58), transparent 34%),
+        radial-gradient(circle at bottom right, rgba(231, 229, 223, 0.12), transparent 30%),
+        linear-gradient(135deg, var(--black) 0%, var(--page-bg) 48%, #2a2034 100%);
     }
 
     button,
@@ -72,7 +85,7 @@
       border: 1px solid var(--border);
       border-radius: var(--radius);
       background:
-        linear-gradient(135deg, rgba(100, 27, 27, 0.92), rgba(31, 23, 20, 0.96)),
+        linear-gradient(135deg, rgba(84, 66, 104, 0.95), rgba(36, 34, 40, 0.96)),
         var(--panel);
       box-shadow: 0 12px 35px var(--shadow);
     }
@@ -145,7 +158,7 @@
       grid-template-columns: 1.2fr repeat(4, minmax(120px, 1fr));
       gap: 10px;
       border-bottom: 1px solid var(--border);
-      background: linear-gradient(180deg, rgba(52, 35, 28, 0.98), rgba(31, 23, 20, 0.98));
+      background: linear-gradient(180deg, rgba(71, 67, 77, 0.98), rgba(36, 34, 40, 0.98));
     }
 
     .filter-field {
@@ -239,7 +252,7 @@
       border-radius: 13px;
       color: var(--text);
       background:
-        linear-gradient(145deg, rgba(52, 35, 28, 0.98), rgba(18, 13, 12, 0.98));
+        linear-gradient(145deg, rgba(71, 67, 77, 0.98), rgba(14, 14, 16, 0.98));
       box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03), 0 7px 16px rgba(0,0,0,0.25);
       cursor: pointer;
       padding: 9px;
@@ -258,7 +271,7 @@
     .player-card.selected {
       border-color: var(--gold-2);
       background:
-        linear-gradient(145deg, rgba(127, 29, 29, 0.95), rgba(36, 23, 17, 0.98));
+        linear-gradient(145deg, rgba(84, 66, 104, 0.98), rgba(20, 18, 24, 0.98));
       box-shadow: 0 0 0 2px rgba(214, 169, 74, 0.22), 0 12px 25px rgba(0,0,0,0.35);
     }
 
@@ -317,7 +330,7 @@
       padding: 18px;
       border-bottom: 1px solid var(--border);
       background:
-        linear-gradient(135deg, rgba(100, 27, 27, 0.72), rgba(0,0,0,0.18));
+        linear-gradient(135deg, rgba(84, 66, 104, 0.82), rgba(0,0,0,0.22));
       position: sticky;
       top: 0;
       z-index: 2;
@@ -335,7 +348,7 @@
     }
 
     .detail-body {
-      padding: 16px;
+      padding: 16px 16px 34px;
       display: grid;
       align-content: start;
       gap: 14px;
@@ -376,11 +389,11 @@
     }
 
     .section-content {
-      padding: 10px 12px;
+      padding: 10px 12px 28px;
       color: var(--muted);
       display: grid;
       gap: 8px;
-      max-height: 260px;
+      max-height: 300px;
       overflow-y: auto;
       overscroll-behavior: contain;
       scrollbar-color: var(--gold) rgba(0,0,0,0.25);
@@ -410,7 +423,7 @@
 
     .item-row:last-child {
       border-bottom: 0;
-      padding-bottom: 0;
+      padding-bottom: 14px;
     }
 
     .item-row strong {
@@ -501,7 +514,8 @@
       }
 
       .section-content {
-        max-height: 220px;
+        max-height: 260px;
+        padding-bottom: 32px;
       }
     }
   </style>
