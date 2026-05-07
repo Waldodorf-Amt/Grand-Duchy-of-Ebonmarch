@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Grim Garrison ORK Dashboard</title>
+  <title>Ebonmarch ORK Dashboard</title>
 
   <style>
     :root {
-      --bg: #0b0d0b;
-      --page-bg: #11170f;
-      --panel: #1d241b;
-      --panel-2: #273123;
-      --panel-3: #34402f;
-      --text: #f0eee5;
-      --muted: #c6c1ae;
-      --green: #3f5f34;
-      --green-2: #5f844e;
-      --gold: #c6aa58;
+      --bg: #0b0b0d;
+      --page-bg: #15121a;
+      --panel: #242228;
+      --panel-2: #343139;
+      --panel-3: #47434d;
+      --text: #f2f0ec;
+      --muted: #c9c4bd;
+      --green: #544268;
+      --green-2: #6d5883;
+      --gold: #e7e5df;
       --black: #050605;
       --border: rgba(198, 170, 88, 0.34);
       --border-soft: rgba(198, 170, 88, 0.16);
@@ -38,9 +38,9 @@
       font-family: Georgia, "Times New Roman", serif;
       color: var(--text);
       background:
-        radial-gradient(circle at top left, rgba(95, 132, 78, 0.42), transparent 34%),
-        radial-gradient(circle at bottom right, rgba(198, 170, 88, 0.12), transparent 30%),
-        linear-gradient(135deg, var(--black) 0%, var(--page-bg) 52%, #1f251b 100%);
+        radial-gradient(circle at top left, rgba(84, 66, 104, 0.58), transparent 34%),
+        radial-gradient(circle at bottom right, rgba(231, 229, 223, 0.12), transparent 30%),
+        linear-gradient(135deg, var(--black) 0%, var(--page-bg) 52%, #2a2034 100%);
     }
 
     button,
@@ -65,7 +65,7 @@
       border: 1px solid var(--border);
       border-radius: var(--radius);
       background:
-        linear-gradient(135deg, rgba(63, 95, 52, 0.92), rgba(29, 36, 27, 0.96));
+        linear-gradient(135deg, rgba(84, 66, 104, 0.95), rgba(36, 34, 40, 0.96));
       box-shadow: 0 12px 35px var(--shadow);
     }
 
@@ -134,7 +134,7 @@
 
     .tab-btn.active,
     .btn.primary {
-      background: rgba(63, 95, 52, 0.95);
+      background: rgba(84, 66, 104, 0.95);
       border-color: var(--gold);
     }
 
@@ -277,6 +277,50 @@
       gap: 10px;
     }
 
+    .award-section {
+      border: 1px solid var(--border-soft);
+      border-radius: 12px;
+      background: rgba(0,0,0,0.14);
+      overflow: hidden;
+    }
+
+    .award-section h3 {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border-soft);
+      background: rgba(84,66,104,0.38);
+      color: var(--gold);
+      font-size: 1rem;
+    }
+
+    .award-list {
+      display: grid;
+      gap: 0;
+      padding: 8px 12px 12px;
+    }
+
+    .award-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 7px 0;
+      border-bottom: 1px solid rgba(231,229,223,0.1);
+      color: var(--muted);
+    }
+
+    .award-item:last-child {
+      border-bottom: 0;
+    }
+
+    .award-item strong {
+      color: var(--text);
+    }
+
+    .award-level {
+      color: var(--gold);
+      white-space: nowrap;
+      font-weight: 700;
+    }
+
     .detail-row {
       border-bottom: 1px solid rgba(198,170,88,0.12);
       padding-bottom: 8px;
@@ -317,6 +361,69 @@
       100% { background-position: -200% 0; }
     }
 
+    #splashScreen {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background:
+        linear-gradient(rgba(11,11,13,0.72), rgba(11,11,13,0.84)),
+        url("Ebonmarch.jpg") center center / cover no-repeat;
+      opacity: 1;
+      transition: opacity 1.2s ease;
+    }
+
+    #splashScreen.fade {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .splash-inner {
+      text-align: center;
+      padding: 28px;
+      border: 1px solid rgba(231,229,223,0.22);
+      border-radius: 18px;
+      background: rgba(0,0,0,0.28);
+      backdrop-filter: blur(4px);
+      box-shadow: 0 18px 40px rgba(0,0,0,0.45);
+    }
+
+    .splash-inner h1 {
+      margin-bottom: 12px;
+      color: var(--gold);
+    }
+
+    .splash-inner p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 1rem;
+      letter-spacing: 0.04em;
+    }
+
+    .loading-bar {
+      width: 240px;
+      height: 10px;
+      margin: 18px auto 0;
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.08);
+    }
+
+    .loading-fill {
+      width: 40%;
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(84,66,104,0.95), rgba(231,229,223,0.9));
+      animation: loadingMove 1.2s infinite ease-in-out;
+    }
+
+    @keyframes loadingMove {
+      0% { transform: translateX(-120%); }
+      100% { transform: translateX(320%); }
+    }
+
     @media (max-width: 980px) {
       .hero,
       .layout,
@@ -332,11 +439,21 @@
   </style>
 </head>
 <body>
+  <div id="splashScreen">
+    <div class="splash-inner">
+      <h1>Ebonmarch</h1>
+      <p>Loading Duchy Records...</p>
+      <div class="loading-bar">
+        <div class="loading-fill"></div>
+      </div>
+    </div>
+  </div>
+
   <main class="shell">
     <header class="hero">
       <div>
-        <h1>Grim Garrison ORK Dashboard</h1>
-        <p>Live park roster and ORK lookup powered directly by JSORK.</p>
+        <h1>Ebonmarch ORK Dashboard</h1>
+        <p>Live duchy roster and award lookup powered directly by JSORK.</p>
       </div>
       <div class="status">
         <span id="statusDot" class="dot"></span>
@@ -352,24 +469,23 @@
 
     <section id="roster" class="view active">
       <div class="stats">
-        <div class="stat-card"><strong id="statRoster">0</strong><span>Roster</span></div>
-        <div class="stat-card"><strong id="statActive">0</strong><span>Active Filter</span></div>
-        <div class="stat-card"><strong id="statPark">714</strong><span>Park ID</span></div>
+        <div class="stat-card"><strong id="statRoster">0</strong><span>12 Month Active</span></div>
+        <div class="stat-card"><strong id="statActive">0</strong><span>Shown</span></div>
+        <div class="stat-card"><strong id="statPark">7</strong><span>Parks</span></div>
         <div class="stat-card"><strong id="statUpdated">—</strong><span>Updated</span></div>
       </div>
 
       <div class="layout">
         <div class="panel">
           <div class="panel-head">
-            <h2>Grim Garrison Players</h2>
-            <p>Search and select a player to view available ORK details.</p>
+            <h2>Ebonmarch Players</h2>
+            <p>Search and select a player to view award levels, masterhoods, and paragons.</p>
           </div>
           <div class="panel-body">
             <div class="toolbar">
               <input id="searchInput" type="search" placeholder="Search persona..." />
-              <select id="filterMode">
+              <select id="filterMode" style="display:none;">
                 <option value="active">Active</option>
-                <option value="all">All roster</option>
               </select>
               <button id="refreshBtn" class="btn primary" type="button">Refresh</button>
             </div>
@@ -430,13 +546,66 @@
   <script defer>
     "use strict";
 
-    const PARK_ID = 714;
-    const PARK_NAME = "Grim Garrison";
+    const EBONMARCH_PARKS = [
+      { id: 655, name: "The Mire" },
+      { id: 714, name: "Grim Garrison" },
+      { id: 797, name: "Direwolf's Rest" },
+      { id: 146, name: "Five Oaks" },
+      { id: 865, name: "Kirin Grove" },
+      { id: 822, name: "Ebonmarch" },
+      { id: 161, name: "Storm Bridge" }
+    ];
+
+    const DUCHY_NAME = "Ebonmarch";
+
+    const AWARD_MAP = {
+      21: "Rose",
+      22: "Smith",
+      23: "Lion",
+      24: "Owl",
+      25: "Dragon",
+      26: "Garber",
+      27: "Warrior",
+      28: "Jovius",
+      29: "Mask",
+      33: "Gryphon",
+      239: "Crown"
+    };
+
+    const MASTER_MAP = {
+      1: "Rose",
+      2: "Smith",
+      3: "Lion",
+      4: "Owl",
+      5: "Dragon",
+      6: "Garber",
+      7: "Jovius",
+      9: "Mask",
+      11: "Gryphon",
+      12: "Warrior",
+      240: "Crown"
+    };
+
+    const PARAGON_MAP = {
+      37: "Anti-Paladin",
+      38: "Archer",
+      39: "Assassin",
+      40: "Barbarian",
+      41: "Bard",
+      42: "Druid",
+      43: "Healer",
+      44: "Monk",
+      46: "Paladin",
+      49: "Scout",
+      50: "Warrior",
+      51: "Wizard"
+    };
 
     const els = {};
     let rosterPlayers = [];
     let activePlayers = [];
     let selectedPlayerKey = "";
+    const playerDetailCache = new Map();
 
     window.addEventListener("DOMContentLoaded", () => {
       cacheEls();
@@ -491,37 +660,60 @@
     }
 
     async function loadParkData() {
-      setStatus("loading", "Loading ORK data...");
-      renderGrid([], "Loading Grim Garrison roster...");
+      setStatus("loading", "Loading Ebonmarch active players...");
+      renderGrid([], "Loading Ebonmarch active players...");
 
       try {
-        const rosterRaw = await jsork.park.getPlayers(PARK_ID, jsork.filters.NOFILTER);
-        const activeRaw = await jsork.park.getPlayers(PARK_ID, jsork.filters.ACTIVE);
+        const activeSets = [];
 
-        rosterPlayers = normalizeRoster(rosterRaw);
-        activePlayers = normalizeRoster(activeRaw);
+        for (const park of EBONMARCH_PARKS) {
+          setStatus("loading", `Loading ${park.name}...`);
 
-        els.statRoster.textContent = rosterPlayers.length;
+          let activeRaw = [];
+
+          try {
+            activeRaw = await jsork.park.getActivePlayers(park.id);
+          } catch (err) {
+            activeRaw = [];
+          }
+
+          if (!activeRaw || !activeRaw.length) {
+            try {
+              activeRaw = await jsork.park.getPlayers(park.id, jsork.filters.ACTIVE);
+            } catch (err) {
+              activeRaw = [];
+            }
+          }
+
+          activeSets.push(...normalizeRoster(activeRaw, park));
+        }
+
+        activePlayers = dedupePlayers(activeSets);
+        rosterPlayers = activePlayers.slice();
+
+        els.statRoster.textContent = activePlayers.length;
         els.statActive.textContent = activePlayers.length;
+        els.statPark.textContent = EBONMARCH_PARKS.length;
         els.statUpdated.textContent = new Date().toLocaleDateString();
 
         applyRosterFilters();
-        setStatus("ready", "Ready · Live ORK data");
+        setStatus("ready", "Ready · Active players only");
+        hideSplash();
       } catch (err) {
         setStatus("error", "ORK load failed");
-        renderGrid([], "Could not load ORK roster. Check console for details.");
+        renderGrid([], "Could not load active Ebonmarch players. Check console for details.");
       }
     }
 
-    function normalizeRoster(raw) {
+    function normalizeRoster(raw, fallbackPark) {
       if (!Array.isArray(raw)) return [];
 
       return raw.map(item => {
-        const name = item.Persona || item.persona || item.Name || item.name || item.Player || item.player || item.MundaneName || "";
-        const mundaneId = item.MundaneId || item.mundaneId || item.PlayerId || item.playerId || item.MundaneID || "";
-        const park = item.Park || item.ParkName || item.park || PARK_NAME;
+        const name = item.Persona || item.persona || item.Name || item.name || item.Player || item.player || item.MundaneName || item.Mundane || item.PersonaName || "";
+        const mundaneId = item.MundaneId || item.mundaneId || item.PlayerId || item.playerId || item.MundaneID || item.Mundane_Id || item.Mundaneid || "";
+        const park = item.Park || item.ParkName || item.park || fallbackPark.name || DUCHY_NAME;
         const kingdom = item.Kingdom || item.KingdomName || item.kingdom || "Rising Winds";
-        const active = item.Active || item.IsActive || item.active || "";
+        const active = item.Active || item.IsActive || item.active || item.SignIns || item.Signins || item.signIns || "Active";
 
         return {
           name: String(name || "").trim(),
@@ -535,9 +727,27 @@
         .sort((a, b) => a.name.localeCompare(b.name));
     }
 
+    function dedupePlayers(players) {
+      const seen = new Map();
+
+      players.forEach(player => {
+        const key = player.mundaneId || player.name.toLowerCase();
+        if (!seen.has(key)) {
+          seen.set(key, player);
+          return;
+        }
+
+        const existing = seen.get(key);
+        if (!existing.park && player.park) existing.park = player.park;
+        if (!existing.mundaneId && player.mundaneId) existing.mundaneId = player.mundaneId;
+      });
+
+      return Array.from(seen.values()).sort((a, b) => a.name.localeCompare(b.name));
+    }
+
     function applyRosterFilters() {
       const search = els.searchInput.value.trim().toLowerCase();
-      const source = els.filterMode.value === "all" ? rosterPlayers : activePlayers;
+      const source = activePlayers;
 
       const players = source.filter(player => {
         if (!search) return true;
@@ -577,30 +787,40 @@
 
       els.detailBody.innerHTML = `
         <h3 class="detail-title">${escapeHtml(player.name)}</h3>
-        <p class="note">Loading ORK player details...</p>
+        <p class="note">Loading ORK player awards...</p>
       `;
 
       if (!player.mundaneId) {
-        renderPlayerDetail(player, null, null);
+        renderPlayerDetail(player, null, []);
+        return;
+      }
+
+      if (playerDetailCache.has(player.mundaneId)) {
+        const cached = playerDetailCache.get(player.mundaneId);
+        renderPlayerDetail(player, cached.info, cached.awards);
         return;
       }
 
       try {
         const info = await jsork.player.getInfo(Number(player.mundaneId));
         let awards = [];
+
         try {
           awards = await jsork.player.getAwards(Number(player.mundaneId), jsork.awardIDs.ALL);
         } catch (err) {
           awards = [];
         }
+
+        playerDetailCache.set(player.mundaneId, { info, awards });
         renderPlayerDetail(player, info, awards);
       } catch (err) {
-        renderPlayerDetail(player, null, null);
+        renderPlayerDetail(player, null, []);
       }
     }
 
     function renderPlayerDetail(player, info, awards) {
       const detail = info || player.raw || {};
+      const parsed = parseAwards(awards || []);
       const awardCount = Array.isArray(awards) ? awards.length : 0;
       const orkUrl = player.mundaneId ? `https://ork.amtgard.com/orkui/index.php?Route=Player/index/${encodeURIComponent(player.mundaneId)}` : "";
 
@@ -608,13 +828,78 @@
         <div class="detail-list">
           <div>
             <h3 class="detail-title">${escapeHtml(player.name)}</h3>
-            <p class="note">${escapeHtml(player.park || PARK_NAME)} · ${escapeHtml(player.kingdom || "Rising Winds")}</p>
+            <p class="note">${escapeHtml(player.park || DUCHY_NAME)} · ${escapeHtml(player.kingdom || "Rising Winds")}</p>
           </div>
           <div class="detail-row"><strong>Player ID</strong><span>${escapeHtml(player.mundaneId || "Not listed")}</span></div>
           <div class="detail-row"><strong>Status</strong><span>${escapeHtml(player.active || detail.Active || detail.IsActive || "Not listed")}</span></div>
           <div class="detail-row"><strong>Award Rows Found</strong><span>${escapeHtml(String(awardCount))}</span></div>
           ${orkUrl ? `<a class="btn primary" href="${orkUrl}" target="_blank" rel="noopener">Open ORK Profile</a>` : ""}
+          ${renderAwardSection("Award Levels", parsed.awardLevels, "No ladder awards listed.")}
+          ${renderAwardSection("Masterhoods", parsed.masterhoods, "No masterhoods listed.")}
+          ${renderAwardSection("Paragons", parsed.paragons, "No paragons listed.")}
         </div>
+      `;
+    }
+
+    function parseAwards(awards) {
+      const levels = {};
+      const masterhoods = [];
+      const paragons = [];
+
+      awards.forEach(award => {
+        const awardId = Number(award.AwardId || award.awardId || award.AwardsId || award.awardsId || 0);
+        const rank = Number(award.Rank || award.rank || 0);
+
+        if (AWARD_MAP[awardId]) {
+          const name = AWARD_MAP[awardId];
+          levels[name] = Math.max(levels[name] || 0, rank || 1);
+        }
+
+        if (MASTER_MAP[awardId]) {
+          const name = MASTER_MAP[awardId];
+          if (!masterhoods.includes(name)) masterhoods.push(name);
+          levels[name] = Math.max(levels[name] || 0, 10);
+        }
+
+        if (PARAGON_MAP[awardId]) {
+          const name = PARAGON_MAP[awardId];
+          if (!paragons.includes(name)) paragons.push(name);
+        }
+      });
+
+      const awardLevels = Object.keys(levels)
+        .sort((a, b) => a.localeCompare(b))
+        .map(name => ({ name, value: levels[name] }));
+
+      return {
+        awardLevels,
+        masterhoods: masterhoods.sort().map(name => ({ name, value: "Master" })),
+        paragons: paragons.sort().map(name => ({ name, value: "Paragon" }))
+      };
+    }
+
+    function renderAwardSection(title, rows, emptyText) {
+      if (!rows || !rows.length) {
+        return `
+          <section class="award-section">
+            <h3>${escapeHtml(title)}</h3>
+            <div class="award-list"><p class="note">${escapeHtml(emptyText)}</p></div>
+          </section>
+        `;
+      }
+
+      return `
+        <section class="award-section">
+          <h3>${escapeHtml(title)}</h3>
+          <div class="award-list">
+            ${rows.map(row => `
+              <div class="award-item">
+                <strong>${escapeHtml(row.name)}</strong>
+                <span class="award-level">${escapeHtml(row.value)}</span>
+              </div>
+            `).join("")}
+          </div>
+        </section>
       `;
     }
 
@@ -691,6 +976,17 @@
 
     function playerKey(player) {
       return String(player.mundaneId || player.name).toLowerCase();
+    }
+
+    function hideSplash() {
+      const splash = document.getElementById("splashScreen");
+      if (!splash) return;
+
+      splash.classList.add("fade");
+
+      setTimeout(() => {
+        splash.remove();
+      }, 1400);
     }
 
     function setStatus(type, text) {
