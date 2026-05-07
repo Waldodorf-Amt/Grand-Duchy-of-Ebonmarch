@@ -687,29 +687,36 @@
       renderGrid([], "Loading Ebonmarch active players...");
 
       try {
-        const activeSets = [];
-
-        for (const park of EBONMARCH_PARKS) {
-          setStatus("loading", `Loading ${park.name}...`);
-
+        const parkRequests = EBONMARCH_PARKS.map(async park => {
           let activeRaw = [];
 
           try {
-            activeRaw = await jsork.park.getActivePlayers(park.id);
+            activeRaw = await withTimeout(
+              jsork.park.getActivePlayers(park.id),
+              12000
+            );
           } catch (err) {
             activeRaw = [];
           }
 
           if (!activeRaw || !activeRaw.length) {
             try {
-              activeRaw = await jsork.park.getPlayers(park.id, jsork.filters.ACTIVE);
+              activeRaw = await withTimeout(
+                jsork.park.getPlayers(park.id, jsork.filters.ACTIVE),
+                12000
+              );
             } catch (err) {
               activeRaw = [];
             }
           }
 
-          activeSets.push(...normalizeRoster(activeRaw, park));
-        }
+          return normalizeRoster(activeRaw, park);
+        });
+
+        const results = await Promise.allSettled(parkRequests);
+        const activeSets = results
+          .filter(result => result.status === "fulfilled")
+          .flatMap(result => result.value);
 
         activePlayers = dedupePlayers(activeSets);
         rosterPlayers = activePlayers.slice();
@@ -724,6 +731,7 @@
         hideSplash();
       } catch (err) {
         setStatus("error", "ORK load failed");
+        hideSplash();
         renderGrid([], "Could not load active Ebonmarch players. Check console for details.");
       }
     }
@@ -1015,6 +1023,15 @@
     function setStatus(type, text) {
       els.statusDot.className = "dot" + (type === "ready" ? " ready" : type === "error" ? " error" : "");
       els.statusText.textContent = text;
+    }
+
+    function withTimeout(promise, ms) {
+      return Promise.race([
+        promise,
+        new Promise((_, reject) => {
+          setTimeout(() => reject(new Error("ORK request timed out")), ms);
+        })
+      ]);
     }
 
     function debounce(fn, delay) {
