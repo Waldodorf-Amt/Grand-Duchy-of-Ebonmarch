@@ -3,42 +3,29 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ebonmarch ORK Dashboard</title>
+  <title>Grim Garrison ORK Dashboard</title>
 
   <style>
     :root {
-      --bg: #0b0b0d;
-      --page-bg: #15121a;
-      --panel: #242228;
-      --panel-2: #343139;
-      --panel-3: #47434d;
-
-      --text: #f2f0ec;
-      --muted: #c9c4bd;
-      --gold: #bfc0bd;
-      --gold-2: #f2f0ec;
-      --red: #544268;
-      --red-2: #6d5883;
-      --deep-red: #33283f;
-
-      --purple: #544268;
-      --purple-2: #6d5883;
-      --stone: #9c9c99;
-      --stone-dark: #5f5f5c;
-      --black: #050505;
-      --silver: #e7e5df;
-
-      --border: rgba(231, 229, 223, 0.38);
-      --border-soft: rgba(231, 229, 223, 0.16);
+      --bg: #0b0d0b;
+      --page-bg: #11170f;
+      --panel: #1d241b;
+      --panel-2: #273123;
+      --panel-3: #34402f;
+      --text: #f0eee5;
+      --muted: #c6c1ae;
+      --green: #3f5f34;
+      --green-2: #5f844e;
+      --gold: #c6aa58;
+      --black: #050605;
+      --border: rgba(198, 170, 88, 0.34);
+      --border-soft: rgba(198, 170, 88, 0.16);
       --shadow: rgba(0, 0, 0, 0.62);
-
-      --good: #9fbf8f;
-      --warn: #c6c1b8;
+      --good: #9ec782;
+      --warn: #d6b96b;
       --danger: #c97a7a;
-
       --radius: 16px;
-      --card-size: 104px;
-      --grid-panel-height: calc(100vh - 295px);
+      --card-size: 118px;
     }
 
     * {
@@ -47,14 +34,13 @@
 
     body {
       margin: 0;
-      height: 100vh;
-      overflow: hidden;
+      min-height: 100vh;
       font-family: Georgia, "Times New Roman", serif;
       color: var(--text);
       background:
-        radial-gradient(circle at top left, rgba(84, 66, 104, 0.58), transparent 34%),
-        radial-gradient(circle at bottom right, rgba(231, 229, 223, 0.12), transparent 30%),
-        linear-gradient(135deg, var(--black) 0%, var(--page-bg) 48%, #2a2034 100%);
+        radial-gradient(circle at top left, rgba(95, 132, 78, 0.42), transparent 34%),
+        radial-gradient(circle at bottom right, rgba(198, 170, 88, 0.12), transparent 30%),
+        linear-gradient(135deg, var(--black) 0%, var(--page-bg) 52%, #1f251b 100%);
     }
 
     button,
@@ -63,55 +49,52 @@
       font: inherit;
     }
 
-    .page-shell {
-      width: min(1540px, calc(100% - 28px));
-      height: 100vh;
+    .shell {
+      width: min(1500px, calc(100% - 28px));
       margin: 0 auto;
-      padding: 14px 0;
-      display: grid;
-      grid-template-rows: auto 1fr;
-      gap: 14px;
+      padding: 18px 0 42px;
     }
 
     .hero {
       display: grid;
       grid-template-columns: 1fr auto;
-      gap: 16px;
+      gap: 18px;
       align-items: center;
-      padding: 16px 20px;
+      padding: 20px;
+      margin-bottom: 16px;
       border: 1px solid var(--border);
       border-radius: var(--radius);
       background:
-        linear-gradient(135deg, rgba(84, 66, 104, 0.95), rgba(36, 34, 40, 0.96)),
-        var(--panel);
+        linear-gradient(135deg, rgba(63, 95, 52, 0.92), rgba(29, 36, 27, 0.96));
       box-shadow: 0 12px 35px var(--shadow);
     }
 
-    .hero h1 {
+    h1,
+    h2,
+    h3 {
       margin: 0;
-      font-size: clamp(1.7rem, 4vw, 3rem);
+    }
+
+    h1 {
+      font-size: clamp(2rem, 4vw, 3.4rem);
+      color: var(--text);
       line-height: 1;
-      letter-spacing: 0.03em;
-      color: var(--gold-2);
-      text-shadow: 0 2px 2px rgba(0,0,0,0.5);
     }
 
     .hero p {
       margin: 8px 0 0;
       color: var(--muted);
-      max-width: 850px;
     }
 
-    .status-pill {
+    .status {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      white-space: nowrap;
       padding: 10px 14px;
       border: 1px solid var(--border);
       border-radius: 999px;
-      color: var(--gold-2);
-      background: rgba(0,0,0,0.22);
+      background: rgba(0,0,0,0.24);
+      white-space: nowrap;
     }
 
     .dot {
@@ -132,916 +115,587 @@
       box-shadow: 0 0 10px var(--danger);
     }
 
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .tab-btn,
+    .btn {
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--text);
+      background: rgba(0,0,0,0.24);
+      padding: 10px 14px;
+      cursor: pointer;
+    }
+
+    .tab-btn.active,
+    .btn.primary {
+      background: rgba(63, 95, 52, 0.95);
+      border-color: var(--gold);
+    }
+
     .layout {
-      min-height: 0;
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 390px;
+      grid-template-columns: 1fr 360px;
       gap: 16px;
-      align-items: stretch;
+      align-items: start;
     }
 
     .panel {
-      min-height: 0;
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      background: rgba(31, 23, 20, 0.96);
+      background: rgba(29, 36, 27, 0.96);
       box-shadow: 0 10px 30px var(--shadow);
       overflow: hidden;
     }
 
-    .filters {
-      padding: 14px;
-      display: grid;
-      grid-template-columns: 1.2fr repeat(4, minmax(120px, 1fr));
-      gap: 10px;
-      border-bottom: 1px solid var(--border);
-      background: linear-gradient(180deg, rgba(71, 67, 77, 0.98), rgba(36, 34, 40, 0.98));
+    .panel-head {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border-soft);
+      background: linear-gradient(180deg, rgba(52, 64, 47, 0.98), rgba(29, 36, 27, 0.98));
     }
 
-    .filter-field {
-      display: grid;
-      gap: 5px;
+    .panel-head p {
+      margin: 6px 0 0;
+      color: var(--muted);
     }
 
-    .filter-field label {
-      font-size: 0.78rem;
-      color: var(--gold-2);
+    .panel-body {
+      padding: 16px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .stat-card {
+      padding: 16px;
+      border: 1px solid var(--border-soft);
+      border-radius: 14px;
+      background: rgba(0,0,0,0.18);
+      text-align: center;
+    }
+
+    .stat-card strong {
+      display: block;
+      color: var(--gold);
+      font-size: 1.8rem;
+      line-height: 1;
+    }
+
+    .stat-card span {
+      display: block;
+      color: var(--muted);
+      margin-top: 6px;
+      font-size: 0.84rem;
       text-transform: uppercase;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.05em;
     }
 
-    .filter-field input,
-    .filter-field select {
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    input,
+    select {
       width: 100%;
-      min-height: 40px;
+      min-height: 42px;
       border: 1px solid var(--border);
       border-radius: 10px;
-      padding: 8px 10px;
+      padding: 9px 10px;
       color: var(--text);
-      background: #15120f;
+      background: #11140f;
       outline: none;
     }
 
-    .filter-field input:focus,
-    .filter-field select:focus {
-      border-color: var(--gold-2);
-      box-shadow: 0 0 0 3px rgba(214, 169, 74, 0.16);
-    }
-
-    .grid-tools {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 12px 14px;
-      border-bottom: 1px solid rgba(214, 169, 74, 0.18);
-      color: var(--muted);
-      background: rgba(0,0,0,0.14);
-    }
-
-    .grid-tools strong {
-      color: var(--gold-2);
-    }
-
-    .clear-btn,
-    .load-more-btn {
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      color: var(--gold-2);
-      background: rgba(127, 29, 29, 0.45);
-      padding: 8px 12px;
-      cursor: pointer;
-    }
-
-    .clear-btn:hover,
-    .load-more-btn:hover {
-      background: rgba(169, 40, 40, 0.65);
+    input:focus,
+    select:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(198,170,88,0.12);
     }
 
     .player-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(var(--card-size), 1fr));
-      gap: 9px;
-      padding: 14px;
-      height: var(--grid-panel-height);
-      min-height: 260px;
+      gap: 10px;
+      max-height: 68vh;
       overflow-y: auto;
-      overscroll-behavior: contain;
-      scrollbar-color: var(--gold) rgba(0,0,0,0.25);
-    }
-
-    .player-grid::-webkit-scrollbar {
-      width: 10px;
-    }
-
-    .player-grid::-webkit-scrollbar-track {
-      background: rgba(0,0,0,0.22);
-    }
-
-    .player-grid::-webkit-scrollbar-thumb {
-      background: rgba(212, 163, 58, 0.7);
-      border-radius: 999px;
+      padding-right: 4px;
     }
 
     .player-card {
       min-height: var(--card-size);
-      border: 1px solid rgba(231,229,223,0.28);
+      border: 1px solid rgba(198, 170, 88, 0.24);
       border-radius: 13px;
       color: var(--text);
-      background: linear-gradient(145deg, rgba(71,67,77,0.98), rgba(14,14,16,0.98));
+      background: linear-gradient(145deg, rgba(52, 64, 47, 0.98), rgba(10, 12, 10, 0.98));
       box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03), 0 7px 16px rgba(0,0,0,0.25);
       cursor: pointer;
-      padding: 9px;
+      padding: 10px;
       display: grid;
-      grid-template-rows: 1fr auto;
-      align-items: center;
+      gap: 8px;
+      align-content: center;
       text-align: center;
     }
 
-    .compact .player-card {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      grid-template-rows: auto auto;
-      min-height: auto;
-      padding: 6px 8px;
-      text-align: left;
-      gap: 2px 6px;
-    }
-
-    .compact .player-name {
-      grid-column: 1;
-      font-size: 0.9rem;
-    }
-
-    .compact .player-park {
-      grid-column: 1;
-      font-size: 0.7rem;
-    }
-
-    .compact .badges {
-      grid-column: 2;
-      grid-row: 1 / span 2;
-      align-items: center;
-      justify-content: flex-end;
-    }
-
-    .player-card:hover {
-      transform: translateY(-2px);
-      border-color: var(--gold-2);
-    }
-
+    .player-card:hover,
     .player-card.selected {
-      border-color: var(--gold-2);
-      background:
-        linear-gradient(145deg, rgba(84, 66, 104, 0.98), rgba(20, 18, 24, 0.98));
-      box-shadow: 0 0 0 2px rgba(214, 169, 74, 0.22), 0 12px 25px rgba(0,0,0,0.35);
+      border-color: var(--gold);
+      transform: translateY(-1px);
     }
 
     .player-name {
+      color: var(--text);
       font-weight: 700;
       line-height: 1.15;
       overflow-wrap: anywhere;
     }
 
-    .player-park {
-      margin-top: 8px;
-      font-size: 0.77rem;
+    .player-meta {
       color: var(--muted);
+      font-size: 0.76rem;
+      line-height: 1.25;
     }
 
-    .badges {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 4px;
-      margin-top: 8px;
-    }
-
-    .badge {
-      min-width: 22px;
-      border: 1px solid rgba(231, 229, 223, 0.35);
-      border-radius: 999px;
-      padding: 2px 6px;
-      color: var(--silver);
-      background: rgba(0,0,0,0.26);
-      font-size: 0.7rem;
-    }
-
-    .award-count {
-      display: none;
-      justify-self: end;
-      align-self: start;
-      min-width: 34px;
-      text-align: right;
-      color: var(--silver);
-      font-weight: 700;
-      font-size: 0.9rem;
-    }
-
-    .compact .award-count {
-      display: block;
-      grid-column: 2;
-      grid-row: 1;
-    }
-
-    .compact .badges {
-      grid-column: 2;
-      grid-row: 2;
-      align-items: center;
-      justify-content: flex-end;
-      margin-top: 0;
-    }
-
-    .view-btn-active {
-      background: rgba(84, 66, 104, 0.9);
-      border-color: var(--silver);
-      color: var(--silver);
-    }
-
-    .load-more-wrap {
-      display: flex;
-      justify-content: center;
-      padding: 0 14px 18px;
-    }
-
-    .empty-state {
-      padding: 45px 20px;
-      text-align: center;
-      color: var(--muted);
-    }
-
-    .detail-panel {
-      height: calc(100vh - 128px);
-      max-height: calc(100vh - 128px);
-      min-height: 0;
-      display: grid;
-      grid-template-rows: auto minmax(0, 1fr);
-      overflow: hidden;
-    }
-
-    .detail-header {
-      padding: 18px;
-      border-bottom: 1px solid var(--border);
-      background:
-        linear-gradient(135deg, rgba(84, 66, 104, 0.82), rgba(0,0,0,0.22));
-      position: sticky;
-      top: 0;
-      z-index: 2;
-    }
-
-    .detail-header h2 {
-      margin: 0;
-      color: var(--gold-2);
-      font-size: 1.55rem;
-    }
-
-    .detail-header p {
-      margin: 6px 0 0;
-      color: var(--muted);
-    }
-
-    .detail-body {
-      padding: 16px 16px 80px;
-      display: block;
-      overflow-y: auto;
-      min-height: 0;
-      max-height: 100%;
-      overscroll-behavior: contain;
-      scrollbar-color: var(--silver) rgba(0,0,0,0.25);
-    }
-
-    .detail-body::-webkit-scrollbar {
-      width: 10px;
-    }
-
-    .detail-body::-webkit-scrollbar-track {
-      background: rgba(0,0,0,0.22);
-    }
-
-    .detail-body::-webkit-scrollbar-thumb {
-      background: rgba(212, 163, 58, 0.7);
-      border-radius: 999px;
-    }
-
-    .section {
-      border: 1px solid rgba(231, 229, 223, 0.18);
-      border-radius: 12px;
-      background: rgba(0,0,0,0.14);
-      overflow: visible;
-      margin-bottom: 14px;
-    }
-
-    .section h3 {
-      margin: 0;
-      padding: 10px 12px;
-      color: var(--gold-2);
-      font-size: 1rem;
-      background: rgba(0,0,0,0.18);
-      border-bottom: 1px solid rgba(214, 169, 74, 0.16);
-    }
-
-    .section-content {
-      padding: 10px 12px 22px;
-      color: var(--muted);
-      display: grid;
-      gap: 8px;
-      overflow: visible;
-      max-height: none;
-    }
-
-    
-
-    .item-row {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 8px;
-      align-items: baseline;
-      padding-bottom: 8px;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-    }
-
-    .item-row:last-child {
-      border-bottom: 0;
-      padding-bottom: 8px;
-    }
-
-    .item-row strong {
+    .detail-title {
+      font-size: 1.6rem;
       color: var(--text);
     }
 
-    .item-row span {
-      color: var(--gold-2);
-      font-size: 0.86rem;
+    .detail-list {
+      display: grid;
+      gap: 10px;
     }
 
-    .small-note {
-      font-size: 0.86rem;
+    .detail-row {
+      border-bottom: 1px solid rgba(198,170,88,0.12);
+      padding-bottom: 8px;
+    }
+
+    .detail-row strong {
+      color: var(--gold);
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .detail-row span {
       color: var(--muted);
     }
 
-    .loading-line {
-      color: var(--gold-2);
+    .view {
+      display: none;
     }
 
-    @media (max-width: 1050px) {
-      body {
-        height: auto;
-        min-height: 100vh;
-        overflow: auto;
-      }
-
-      .page-shell {
-        height: auto;
-      }
-
-      .layout {
-        grid-template-columns: 1fr;
-      }
-
-      .player-grid {
-        height: 58vh;
-      }
-
-      .detail-panel {
-        height: 75vh;
-        max-height: 75vh;
-      }
+    .view.active {
+      display: block;
     }
 
-    @media (max-width: 850px) {
-      .hero {
-        grid-template-columns: 1fr;
-      }
-
-      .filters {
-        grid-template-columns: 1fr 1fr;
-      }
+    .note {
+      color: var(--muted);
     }
 
-    @media (max-width: 560px) {
-      :root {
-        --card-size: 96px;
-      }
+    .skeleton {
+      min-height: 110px;
+      border-radius: 14px;
+      background: linear-gradient(90deg, rgba(255,255,255,0.05), rgba(255,255,255,0.11), rgba(255,255,255,0.05));
+      background-size: 200% 100%;
+      animation: shimmer 1.2s infinite;
+    }
 
-      .page-shell {
-        width: min(100% - 16px, 1500px);
-        padding-top: 8px;
-      }
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
 
+    @media (max-width: 980px) {
       .hero,
-      .panel {
-        border-radius: 12px;
-      }
-
-      .filters {
+      .layout,
+      .stats,
+      .toolbar {
         grid-template-columns: 1fr;
       }
 
-      .grid-tools {
-        align-items: flex-start;
-        flex-direction: column;
-      }
-
       .player-grid {
-        height: 50vh;
-        gap: 8px;
-      }
-
-      .detail-panel {
-        height: 70vh;
-        max-height: 70vh;
-      }
-
-      .detail-body {
-        padding-bottom: 90px;
+        max-height: none;
       }
     }
   </style>
 </head>
 <body>
-  <main class="page-shell">
+  <main class="shell">
     <header class="hero">
       <div>
-        <h1>Ebonmarch ORK Dashboard</h1>
-        <p>Search, filter, and view player awards without forcing the full kingdom dataset to render at once.</p>
+        <h1>Grim Garrison ORK Dashboard</h1>
+        <p>Live park roster and ORK lookup powered directly by JSORK.</p>
       </div>
-      <div class="status-pill" aria-live="polite">
+      <div class="status">
         <span id="statusDot" class="dot"></span>
-        <span id="statusText">Loading index...</span>
+        <span id="statusText">Loading...</span>
       </div>
     </header>
 
-    <section class="layout">
-      <div class="panel">
-        <form class="filters" id="filters">
-          <div class="filter-field">
-            <label for="searchInput">Search</label>
-            <input id="searchInput" type="search" placeholder="Persona or player name" autocomplete="off" />
-          </div>
+    <nav class="tabs">
+      <button class="tab-btn active" data-view="roster">Roster</button>
+      <button class="tab-btn" data-view="search">ORK Search</button>
+      <button class="tab-btn" data-view="about">About</button>
+    </nav>
 
-          <div class="filter-field">
-            <label for="parkFilter">Park</label>
-            <select id="parkFilter">
-              <option value="">Any Park</option>
-            </select>
-          </div>
-
-          <div class="filter-field">
-            <label for="awardFilter">Award</label>
-            <select id="awardFilter">
-              <option value="">Any Award</option>
-            </select>
-          </div>
-
-          <div class="filter-field">
-            <label for="masterhoodFilter">Masterhood</label>
-            <select id="masterhoodFilter">
-              <option value="">Any Masterhood</option>
-            </select>
-          </div>
-
-          <div class="filter-field">
-            <label for="paragonFilter">Paragon</label>
-            <select id="paragonFilter">
-              <option value="">Any Paragon</option>
-            </select>
-          </div>
-        </form>
-
-        <div class="grid-tools">
-          <div style="display:flex;gap:8px;align-items:center;">
-            <button id="viewSquare" class="clear-btn view-btn-active" type="button">Square</button>
-            <button id="viewCompact" class="clear-btn" type="button">Compact</button>
-            <button id="sortAwards" class="clear-btn" type="button">Sort Awards</button>
-          </div>
-          <div>
-            Showing <strong id="showingCount">0</strong> of <strong id="totalCount">0</strong> matching players
-            <span class="small-note" id="updatedAt"></span>
-          </div>
-          <button class="clear-btn" id="clearFilters" type="button">Clear filters</button>
-        </div>
-
-        <div id="playerGrid" class="player-grid" aria-live="polite"></div>
-
-        <div class="load-more-wrap">
-          <button class="load-more-btn" id="loadMoreBtn" type="button" hidden>Load more</button>
-        </div>
+    <section id="roster" class="view active">
+      <div class="stats">
+        <div class="stat-card"><strong id="statRoster">0</strong><span>Roster</span></div>
+        <div class="stat-card"><strong id="statActive">0</strong><span>Active Filter</span></div>
+        <div class="stat-card"><strong id="statPark">714</strong><span>Park ID</span></div>
+        <div class="stat-card"><strong id="statUpdated">—</strong><span>Updated</span></div>
       </div>
 
-      <aside class="panel detail-panel" id="detailPanel">
-        <div class="detail-header">
-          <h2>Select a player</h2>
-          <p>Player details load only when a card is selected.</p>
-        </div>
-        <div class="detail-body">
-          <div class="section">
-            <h3>Performance Mode</h3>
-            <div class="section-content">
-              <div>This page loads a small index first, then requests detailed awards only when needed.</div>
+      <div class="layout">
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Grim Garrison Players</h2>
+            <p>Search and select a player to view available ORK details.</p>
+          </div>
+          <div class="panel-body">
+            <div class="toolbar">
+              <input id="searchInput" type="search" placeholder="Search persona..." />
+              <select id="filterMode">
+                <option value="active">Active</option>
+                <option value="all">All roster</option>
+              </select>
+              <button id="refreshBtn" class="btn primary" type="button">Refresh</button>
+            </div>
+            <div id="playerGrid" class="player-grid">
+              <div class="skeleton"></div>
+              <div class="skeleton"></div>
+              <div class="skeleton"></div>
             </div>
           </div>
         </div>
-      </aside>
+
+        <aside class="panel">
+          <div class="panel-head">
+            <h2>Player Detail</h2>
+            <p>Details load when a player is selected.</p>
+          </div>
+          <div id="detailBody" class="panel-body">
+            <p class="note">Select a player from the roster.</p>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="search" class="view">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>ORK Player Search</h2>
+          <p>Search all ORK players without saving anything to Google Sheets.</p>
+        </div>
+        <div class="panel-body">
+          <div class="toolbar" style="grid-template-columns:1fr auto;">
+            <input id="globalSearchInput" type="search" placeholder="Type at least 2 letters..." />
+            <button id="globalSearchBtn" class="btn primary" type="button">Search</button>
+          </div>
+          <div id="globalResults" class="player-grid"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="about" class="view">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>About This Dashboard</h2>
+          <p>This version reads public ORK API data directly through JSORK.</p>
+        </div>
+        <div class="panel-body detail-list">
+          <div class="detail-row"><strong>Frontend</strong><span>GitHub Pages</span></div>
+          <div class="detail-row"><strong>ORK Data</strong><span>JSORK + Amtgard ORK JSON API</span></div>
+          <div class="detail-row"><strong>Saved Data</strong><span>None yet. Google Sheets only needed later for custom notes or local tracking.</span></div>
+        </div>
+      </div>
     </section>
   </main>
 
-  <script>
+  <script defer src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script defer src="jsork.js"></script>
+
+  <script defer>
     "use strict";
-    const API_URL = "https://script.google.com/macros/s/AKfycbxO5_gSiFx6aj9nMDrfNvhlbev_CZh383ARjk0pZO-BxhwAbtIVxaO0gKp2cImHPJPK/exec";
-    const PAGE_SIZE = 60;
 
-    let allPlayers = [];
-    let filteredPlayers = [];
-    let visibleCount = PAGE_SIZE;
-    let selectedPlayerId = null;
+    const PARK_ID = 714;
+    const PARK_NAME = "Grim Garrison";
 
-    const detailCache = new Map();
+    const els = {};
+    let rosterPlayers = [];
+    let activePlayers = [];
+    let selectedPlayerKey = "";
 
-    const els = {
-      statusDot: document.getElementById("statusDot"),
-      statusText: document.getElementById("statusText"),
-      filters: document.getElementById("filters"),
-      searchInput: document.getElementById("searchInput"),
-      parkFilter: document.getElementById("parkFilter"),
-      awardFilter: document.getElementById("awardFilter"),
-      masterhoodFilter: document.getElementById("masterhoodFilter"),
-      paragonFilter: document.getElementById("paragonFilter"),
-      clearFilters: document.getElementById("clearFilters"),
-      playerGrid: document.getElementById("playerGrid"),
-      showingCount: document.getElementById("showingCount"),
-      totalCount: document.getElementById("totalCount"),
-      updatedAt: document.getElementById("updatedAt"),
-      loadMoreBtn: document.getElementById("loadMoreBtn"),
-      detailPanel: document.getElementById("detailPanel")
-    };
-    function jsonp(url, params = {}) {
-      return new Promise((resolve, reject) => {
-        const callbackName = "orkJsonp_" + Date.now() + "_" + Math.random().toString(36).slice(2);
-        const script = document.createElement("script");
-        const query = new URLSearchParams({ ...params, callback: callbackName });
+    window.addEventListener("DOMContentLoaded", () => {
+      cacheEls();
+      bindEvents();
+      setStatus("loading", "Page ready");
+    });
 
-        let timeoutId;
-
-        window[callbackName] = data => {
-          clearTimeout(timeoutId);
-          cleanup();
-          resolve(data);
-        };
-
-        function cleanup() {
-          delete window[callbackName];
-          script.remove();
+    window.addEventListener("load", () => {
+      requestAnimationFrame(() => {
+        if (hasJsork()) {
+          setStatus("ready", "Ready · ORK connected");
+          loadParkData();
+        } else {
+          setStatus("error", "JSORK unavailable");
+          renderGrid([], "Could not load JSORK. Check jsork.js filename and path.");
         }
+      });
+    });
 
-        script.onerror = () => {
-          clearTimeout(timeoutId);
-          cleanup();
-          reject(new Error("Could not load data from Apps Script."));
-        };
+    function cacheEls() {
+      els.statusDot = document.getElementById("statusDot");
+      els.statusText = document.getElementById("statusText");
+      els.playerGrid = document.getElementById("playerGrid");
+      els.detailBody = document.getElementById("detailBody");
+      els.searchInput = document.getElementById("searchInput");
+      els.filterMode = document.getElementById("filterMode");
+      els.refreshBtn = document.getElementById("refreshBtn");
+      els.statRoster = document.getElementById("statRoster");
+      els.statActive = document.getElementById("statActive");
+      els.statUpdated = document.getElementById("statUpdated");
+      els.globalSearchInput = document.getElementById("globalSearchInput");
+      els.globalSearchBtn = document.getElementById("globalSearchBtn");
+      els.globalResults = document.getElementById("globalResults");
+    }
 
-        timeoutId = setTimeout(() => {
-          cleanup();
-          reject(new Error("Data request timed out."));
-        }, 30000);
+    function bindEvents() {
+      document.querySelectorAll(".tab-btn").forEach(btn => {
+        btn.addEventListener("click", () => showView(btn.dataset.view));
+      });
 
-        script.src = url + "?" + query.toString();
-        document.body.appendChild(script);
+      els.searchInput.addEventListener("input", debounce(applyRosterFilters, 150));
+      els.filterMode.addEventListener("change", applyRosterFilters);
+      els.refreshBtn.addEventListener("click", loadParkData);
+      els.globalSearchBtn.addEventListener("click", runGlobalSearch);
+      els.globalSearchInput.addEventListener("keydown", event => {
+        if (event.key === "Enter") runGlobalSearch();
       });
     }
-    init();
 
-    async function init() {
-      setStatus("loading", "Loading index...");
+    function hasJsork() {
+      return Boolean(window.jsork && jsork.park && jsork.park.getPlayers && jsork.searchservice && jsork.searchservice.searchPlayer);
+    }
+
+    async function loadParkData() {
+      setStatus("loading", "Loading ORK data...");
+      renderGrid([], "Loading Grim Garrison roster...");
 
       try {
-        const data = await jsonp(API_URL, { action: "index" });
-        hydrateIndex(data);
-        setStatus("ready", "Ready");
+        const rosterRaw = await jsork.park.getPlayers(PARK_ID, jsork.filters.NOFILTER);
+        const activeRaw = await jsork.park.getPlayers(PARK_ID, jsork.filters.ACTIVE);
+
+        rosterPlayers = normalizeRoster(rosterRaw);
+        activePlayers = normalizeRoster(activeRaw);
+
+        els.statRoster.textContent = rosterPlayers.length;
+        els.statActive.textContent = activePlayers.length;
+        els.statUpdated.textContent = new Date().toLocaleDateString();
+
+        applyRosterFilters();
+        setStatus("ready", "Ready · Live ORK data");
       } catch (err) {
-        console.error(err);
-        setStatus("error", "Load failed");
-        renderEmpty("Could not load the ORK dashboard index. Check the Apps Script URL and deployment permissions.");
+        setStatus("error", "ORK load failed");
+        renderGrid([], "Could not load ORK roster. Check console for details.");
       }
     }
 
-    function hydrateIndex(data) {
-      allPlayers = normalizePlayers(data.players || data || []);
-      filteredPlayers = allPlayers.slice();
+    function normalizeRoster(raw) {
+      if (!Array.isArray(raw)) return [];
 
-      populateSelect(els.parkFilter, data.parks || uniqueFlat(allPlayers.map(p => p.park)), "Any Park");
-      populateSelect(els.awardFilter, data.awardTypes || uniqueFlat(allPlayers.flatMap(p => p.awardKeys || [])), "Any Award");
-      populateSelect(els.masterhoodFilter, data.masterhoodTypes || uniqueFlat(allPlayers.flatMap(p => p.masterhoodKeys || [])), "Any Masterhood");
-      populateSelect(els.paragonFilter, data.paragonTypes || uniqueFlat(allPlayers.flatMap(p => p.paragonKeys || [])), "Any Paragon");
+      return raw.map(item => {
+        const name = item.Persona || item.persona || item.Name || item.name || item.Player || item.player || item.MundaneName || "";
+        const mundaneId = item.MundaneId || item.mundaneId || item.PlayerId || item.playerId || item.MundaneID || "";
+        const park = item.Park || item.ParkName || item.park || PARK_NAME;
+        const kingdom = item.Kingdom || item.KingdomName || item.kingdom || "Rising Winds";
+        const active = item.Active || item.IsActive || item.active || "";
 
-      if (data.updatedAt) {
-        els.updatedAt.textContent = " · Updated " + formatDate(data.updatedAt);
-      }
-
-      applyFilters();
-      bindEvents();
+        return {
+          name: String(name || "").trim(),
+          mundaneId: String(mundaneId || "").trim(),
+          park: String(park || "").trim(),
+          kingdom: String(kingdom || "").trim(),
+          active: String(active || "").trim(),
+          raw: item
+        };
+      }).filter(player => player.name)
+        .sort((a, b) => a.name.localeCompare(b.name));
     }
 
-    function normalizePlayers(players) {
-      return players.map(p => ({
-        id: String(p.id || p.playerId || p.PlayerId || p.orkId || p.name || p.persona),
-        name: String(p.name || p.persona || p.Persona || p.Player || "Unknown Player"),
-        park: String(p.park || p.Park || "Unknown Park"),
-        lastSignIn: p.lastSignIn || p.LastSignIn || "",
-        totalAwards: Number(p.totalAwards || p.TotalAwards || 0),
-        awardKeys: arrayify(p.awardKeys || p.awardsSummary || p.awards || []),
-        masterhoodKeys: arrayify(p.masterhoodKeys || p.masterhoodsSummary || p.masterhoods || []),
-        paragonKeys: arrayify(p.paragonKeys || p.paragonsSummary || p.paragons || []),
-        hasAwards: Boolean(p.hasAwards || (p.awardKeys && p.awardKeys.length)),
-        hasMasterhoods: Boolean(p.hasMasterhoods || (p.masterhoodKeys && p.masterhoodKeys.length)),
-        hasParagons: Boolean(p.hasParagons || (p.paragonKeys && p.paragonKeys.length))
-      })).sort((a, b) => a.name.localeCompare(b.name));
+    function applyRosterFilters() {
+      const search = els.searchInput.value.trim().toLowerCase();
+      const source = els.filterMode.value === "all" ? rosterPlayers : activePlayers;
+
+      const players = source.filter(player => {
+        if (!search) return true;
+        return player.name.toLowerCase().includes(search);
+      });
+
+      renderGrid(players);
     }
-    function bindEvents() {
-      document.getElementById("viewSquare").addEventListener("click", () => {
-        document.body.classList.remove("compact");
-        document.getElementById("viewSquare").classList.add("view-btn-active");
-        document.getElementById("viewCompact").classList.remove("view-btn-active");
-      });
 
-      document.getElementById("viewCompact").addEventListener("click", () => {
-        document.body.classList.add("compact");
-        document.getElementById("viewCompact").classList.add("view-btn-active");
-        document.getElementById("viewSquare").classList.remove("view-btn-active");
-      });
-
-      document.getElementById("sortAwards").addEventListener("click", () => {
-        filteredPlayers.sort((a, b) => {
-          const awardDiff = Number(b.totalAwards || 0) - Number(a.totalAwards || 0);
-          if (awardDiff !== 0) return awardDiff;
-          return a.name.localeCompare(b.name);
-        });
-        visibleCount = PAGE_SIZE;
-        renderGrid(true);
-      });
-      const debouncedFilters = debounce(applyFilters, 120);
-
-      els.filters.addEventListener("input", debouncedFilters);
-      els.filters.addEventListener("change", debouncedFilters);
-
-      els.clearFilters.addEventListener("click", () => {
-        els.searchInput.value = "";
-        els.parkFilter.value = "";
-        els.awardFilter.value = "";
-        els.masterhoodFilter.value = "";
-        els.paragonFilter.value = "";
-        applyFilters();
-      });
-
-      els.loadMoreBtn.addEventListener("click", () => {
-        visibleCount += PAGE_SIZE;
-        renderGrid(false);
-      });
-
-      els.playerGrid.addEventListener("click", event => {
-        const card = event.target.closest(".player-card");
-        if (!card) return;
-        selectPlayer(card.dataset.id);
-      });
-
-      els.playerGrid.addEventListener("scroll", throttle(() => {
-        const nearBottom = els.playerGrid.scrollTop + els.playerGrid.clientHeight >= els.playerGrid.scrollHeight - 250;
-        if (nearBottom && visibleCount < filteredPlayers.length) {
-          visibleCount += PAGE_SIZE;
-          renderGrid(false);
-        }
-      }, 180));
-    }
-    function applyFilters() {
-      const term = els.searchInput.value.trim().toLowerCase();
-      const park = els.parkFilter.value;
-      const award = els.awardFilter.value;
-      const masterhood = els.masterhoodFilter.value;
-      const paragon = els.paragonFilter.value;
-
-      filteredPlayers = allPlayers.filter(player => {
-        if (term) {
-          const haystack = `${player.name} ${player.park}`.toLowerCase();
-          if (!haystack.includes(term)) return false;
-        }
-
-        if (park && player.park !== park) return false;
-        if (award && !player.awardKeys.includes(award)) return false;
-        if (masterhood && !player.masterhoodKeys.includes(masterhood)) return false;
-        if (paragon && !player.paragonKeys.includes(paragon)) return false;
-
-        return true;
-      });
-
-      visibleCount = PAGE_SIZE;
-      renderGrid(true);
-    }
-    function renderGrid(reset = false) {
-      if (reset) {
-        els.playerGrid.innerHTML = "";
-      }
-
-      if (!filteredPlayers.length) {
-        renderEmpty("No players match the current filters.");
-        updateCounts();
+    function renderGrid(players, emptyMessage = "No players found.") {
+      if (!players.length) {
+        els.playerGrid.innerHTML = `<p class="note">${escapeHtml(emptyMessage)}</p>`;
         return;
       }
 
-      const alreadyRendered = reset ? 0 : els.playerGrid.children.length;
-      const nextPlayers = filteredPlayers.slice(alreadyRendered, visibleCount);
       const fragment = document.createDocumentFragment();
 
-      nextPlayers.forEach(player => {
-        fragment.appendChild(createPlayerCard(player));
+      players.forEach(player => {
+        const card = document.createElement("button");
+        card.type = "button";
+        card.className = "player-card" + (playerKey(player) === selectedPlayerKey ? " selected" : "");
+        card.innerHTML = `
+          <span class="player-name">${escapeHtml(player.name)}</span>
+          <span class="player-meta">${escapeHtml(player.kingdom || "")}</span>
+        `;
+        card.addEventListener("click", () => selectPlayer(player));
+        fragment.appendChild(card);
       });
 
+      els.playerGrid.innerHTML = "";
       els.playerGrid.appendChild(fragment);
-      updateCounts();
     }
 
-    function createPlayerCard(player) {
-      const card = document.createElement("button");
-      card.type = "button";
-      card.className = "player-card";
-      card.dataset.id = player.id;
+    async function selectPlayer(player) {
+      selectedPlayerKey = playerKey(player);
+      applyRosterFilters();
 
-      if (player.id === selectedPlayerId) {
-        card.classList.add("selected");
-      }
-
-      const badges = [];
-      if (player.awardKeys.length || player.hasAwards) badges.push("A");
-      if (player.masterhoodKeys.length || player.hasMasterhoods) badges.push("M");
-      if (player.paragonKeys.length || player.hasParagons) badges.push("P");
-
-      const totalAwards = Number(player.totalAwards || 0);
-
-      card.innerHTML = `
-        <div>
-          <div class="player-name">${escapeHtml(player.name)}</div>
-          <div class="player-park">${escapeHtml(player.park)}</div>
-        </div>
-        <div class="award-count">${totalAwards}</div>
-        <div class="badges">
-          ${badges.map(b => `<span class="badge">${b}</span>`).join("")}
-        </div>
+      els.detailBody.innerHTML = `
+        <h3 class="detail-title">${escapeHtml(player.name)}</h3>
+        <p class="note">Loading ORK player details...</p>
       `;
 
-      return card;
-    }
-
-    function updateCounts() {
-      const showing = Math.min(visibleCount, filteredPlayers.length);
-      els.showingCount.textContent = String(showing);
-      els.totalCount.textContent = String(filteredPlayers.length);
-      els.loadMoreBtn.hidden = showing >= filteredPlayers.length;
-    }
-
-    function renderEmpty(message) {
-      els.playerGrid.innerHTML = `<div class="empty-state">${escapeHtml(message)}</div>`;
-      els.loadMoreBtn.hidden = true;
-    }
-    async function selectPlayer(id) {
-      selectedPlayerId = id;
-
-      document.querySelectorAll(".player-card.selected").forEach(card => {
-        card.classList.remove("selected");
-      });
-
-      const selectedCard = els.playerGrid.querySelector(`[data-id="${cssEscape(id)}"]`);
-      if (selectedCard) selectedCard.classList.add("selected");
-
-      const indexPlayer = allPlayers.find(player => player.id === id);
-      renderDetailLoading(indexPlayer);
-
-      if (detailCache.has(id)) {
-        renderDetail(detailCache.get(id));
+      if (!player.mundaneId) {
+        renderPlayerDetail(player, null, null);
         return;
       }
 
       try {
-        const detail = await jsonp(API_URL, { action: "detail", id });
-        const normalized = normalizeDetail(detail, indexPlayer);
-        detailCache.set(id, normalized);
-        renderDetail(normalized);
+        const info = await jsork.player.getInfo(Number(player.mundaneId));
+        let awards = [];
+        try {
+          awards = await jsork.player.getAwards(Number(player.mundaneId), jsork.awardIDs.ALL);
+        } catch (err) {
+          awards = [];
+        }
+        renderPlayerDetail(player, info, awards);
       } catch (err) {
-        console.error(err);
-        renderDetailError(indexPlayer);
+        renderPlayerDetail(player, null, null);
       }
     }
 
-    function normalizeDetail(detail, fallback = {}) {
-      return {
-        id: String(detail.id || fallback.id || ""),
-        name: String(detail.name || fallback.name || "Unknown Player"),
-        park: String(detail.park || fallback.park || "Unknown Park"),
-        lastSignIn: detail.lastSignIn || fallback.lastSignIn || "",
-        awards: arrayify(detail.awards || []),
-        masterhoods: arrayify(detail.masterhoods || []),
-        paragons: arrayify(detail.paragons || [])
-      };
-    }
+    function renderPlayerDetail(player, info, awards) {
+      const detail = info || player.raw || {};
+      const awardCount = Array.isArray(awards) ? awards.length : 0;
+      const orkUrl = player.mundaneId ? `https://ork.amtgard.com/orkui/index.php?Route=Player/index/${encodeURIComponent(player.mundaneId)}` : "";
 
-    function renderDetailLoading(player = {}) {
-      els.detailPanel.innerHTML = `
-        <div class="detail-header">
-          <h2>${escapeHtml(player.name || "Loading player")}</h2>
-          <p>${escapeHtml(player.park || "")}</p>
-        </div>
-        <div class="detail-body">
-          <div class="loading-line">Loading full player details...</div>
-        </div>
-      `;
-    }
-
-    function renderDetailError(player = {}) {
-      els.detailPanel.innerHTML = `
-        <div class="detail-header">
-          <h2>${escapeHtml(player.name || "Player")}</h2>
-          <p>${escapeHtml(player.park || "")}</p>
-        </div>
-        <div class="detail-body">
-          <div class="section">
-            <h3>Unable to load details</h3>
-            <div class="section-content">Check that Apps Script supports <strong>action=detail</strong> and returns JSONP.</div>
+      els.detailBody.innerHTML = `
+        <div class="detail-list">
+          <div>
+            <h3 class="detail-title">${escapeHtml(player.name)}</h3>
+            <p class="note">${escapeHtml(player.park || PARK_NAME)} · ${escapeHtml(player.kingdom || "Rising Winds")}</p>
           </div>
+          <div class="detail-row"><strong>Player ID</strong><span>${escapeHtml(player.mundaneId || "Not listed")}</span></div>
+          <div class="detail-row"><strong>Status</strong><span>${escapeHtml(player.active || detail.Active || detail.IsActive || "Not listed")}</span></div>
+          <div class="detail-row"><strong>Award Rows Found</strong><span>${escapeHtml(String(awardCount))}</span></div>
+          ${orkUrl ? `<a class="btn primary" href="${orkUrl}" target="_blank" rel="noopener">Open ORK Profile</a>` : ""}
         </div>
       `;
     }
 
-    function renderDetail(player) {
-      els.detailPanel.innerHTML = `
-        <div class="detail-header">
-          <h2>${escapeHtml(player.name)}</h2>
-          <p>${escapeHtml(player.park)}${player.lastSignIn ? " · Last sign-in " + escapeHtml(formatDate(player.lastSignIn)) : ""}</p>
-        </div>
-        <div class="detail-body">
-          ${renderSection("Awards", player.awards)}
-          ${renderSection("Masterhoods", player.masterhoods)}
-          ${renderSection("Paragons", player.paragons)}
-        </div>
-      `;
+    async function runGlobalSearch() {
+      const query = els.globalSearchInput.value.trim();
+
+      if (query.length < 2) {
+        els.globalResults.innerHTML = `<p class="note">Type at least 2 letters.</p>`;
+        return;
+      }
+
+      els.globalResults.innerHTML = `<p class="note">Searching ORK...</p>`;
+
+      try {
+        const raw = await jsork.searchservice.searchPlayer(query);
+        const players = normalizeSearchResults(raw).slice(0, 20);
+        renderGlobalResults(players);
+      } catch (err) {
+        els.globalResults.innerHTML = `<p class="note">Could not search ORK.</p>`;
+      }
     }
 
-    function renderSection(title, items) {
-      const rows = arrayify(items);
+    function normalizeSearchResults(raw) {
+      if (!Array.isArray(raw)) return [];
 
-      if (!rows.length) {
-        return `
-          <div class="section">
-            <h3>${escapeHtml(title)}</h3>
-            <div class="section-content">None listed.</div>
-          </div>
+      return raw.map(item => {
+        const name = item.Persona || item.persona || item.Name || item.name || item.Player || item.player || item.label || "";
+        const kingdom = item.Kingdom || item.kingdom || item.KingdomName || item.kingdom_name || "";
+        const park = item.Park || item.park || item.ParkName || item.park_name || "";
+        const mundaneId = item.MundaneId || item.mundaneId || item.PlayerId || item.playerId || "";
+
+        return {
+          name: String(name || "").trim(),
+          kingdom: String(kingdom || "").trim(),
+          park: String(park || "").trim(),
+          mundaneId: String(mundaneId || "").trim(),
+          raw: item
+        };
+      }).filter(player => player.name);
+    }
+
+    function renderGlobalResults(players) {
+      if (!players.length) {
+        els.globalResults.innerHTML = `<p class="note">No players found.</p>`;
+        return;
+      }
+
+      const fragment = document.createDocumentFragment();
+
+      players.forEach(player => {
+        const card = document.createElement("button");
+        card.type = "button";
+        card.className = "player-card";
+        card.innerHTML = `
+          <span class="player-name">${escapeHtml(player.name)}</span>
+          <span class="player-meta">${escapeHtml([player.park, player.kingdom].filter(Boolean).join(" · "))}</span>
         `;
-      }
+        card.addEventListener("click", () => selectPlayer(player));
+        fragment.appendChild(card);
+      });
 
-      return `
-        <div class="section">
-          <h3>${escapeHtml(title)}</h3>
-          <div class="section-content">
-            ${rows.map(renderDetailRow).join("")}
-          </div>
-        </div>
-      `;
+      els.globalResults.innerHTML = "";
+      els.globalResults.appendChild(fragment);
     }
 
-    function renderDetailRow(item) {
-      if (typeof item === "string") {
-        return `<div class="item-row"><strong>${escapeHtml(item)}</strong><span></span></div>`;
-      }
+    function showView(id) {
+      document.querySelectorAll(".view").forEach(view => view.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
 
-      const name = item.name || item.award || item.title || item.type || "Award";
-      const rank = item.rank || item.level || item.count || item.date || "";
-
-      return `
-        <div class="item-row">
-          <strong>${escapeHtml(name)}</strong>
-          <span>${escapeHtml(String(rank))}</span>
-        </div>
-      `;
+      document.querySelectorAll(".tab-btn").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.view === id);
+      });
     }
+
+    function playerKey(player) {
+      return String(player.mundaneId || player.name).toLowerCase();
+    }
+
     function setStatus(type, text) {
       els.statusDot.className = "dot" + (type === "ready" ? " ready" : type === "error" ? " error" : "");
       els.statusText.textContent = text;
-    }
-
-    function populateSelect(select, values, defaultLabel) {
-      const clean = uniqueFlat(values).filter(Boolean).sort((a, b) => a.localeCompare(b));
-      select.innerHTML = `<option value="">${escapeHtml(defaultLabel)}</option>` + clean.map(value => {
-        return `<option value="${escapeHtml(value)}">${escapeHtml(value)}</option>`;
-      }).join("");
-    }
-
-    function arrayify(value) {
-      if (!value) return [];
-      if (Array.isArray(value)) return value.filter(Boolean);
-      if (typeof value === "string") {
-        return value.split(/[|,;]/).map(v => v.trim()).filter(Boolean);
-      }
-      return [value];
-    }
-
-    function uniqueFlat(values) {
-      return [...new Set(values.flat().filter(Boolean).map(String))];
     }
 
     function debounce(fn, delay) {
@@ -1052,22 +706,6 @@
       };
     }
 
-    function throttle(fn, delay) {
-      let waiting = false;
-      return (...args) => {
-        if (waiting) return;
-        waiting = true;
-        fn(...args);
-        setTimeout(() => waiting = false, delay);
-      };
-    }
-
-    function formatDate(value) {
-      const date = new Date(value);
-      if (Number.isNaN(date.getTime())) return String(value);
-      return date.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
-    }
-
     function escapeHtml(value) {
       return String(value ?? "")
         .replaceAll("&", "&amp;")
@@ -1076,24 +714,6 @@
         .replaceAll('"', "&quot;")
         .replaceAll("'", "&#039;");
     }
-
-    function cssEscape(value) {
-      if (window.CSS && CSS.escape) return CSS.escape(value);
-      return String(value).replace(/[^a-zA-Z0-9_-]/g, "\\$&");
-    }
-  </script>
-  <div id="splash" style="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:#000;transition:opacity 1.2s ease;">
-    <img src="Ebonmarch.jpg" style="max-width:70vw;max-height:70vh;object-fit:contain;filter:drop-shadow(0 0 30px rgba(0,0,0,0.6));" />
-  </div>
-
-  <script>
-    window.addEventListener("load", () => {
-      const splash = document.getElementById("splash");
-      setTimeout(() => {
-        splash.style.opacity = "0";
-        setTimeout(() => splash.remove(), 1200);
-      }, 600);
-    });
   </script>
 </body>
 </html>
