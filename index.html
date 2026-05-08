@@ -1,1260 +1,546 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Grand Duchy of Ebonmarch ORK Dashboard</title>
+function doGet(e) {
+  e = e || { parameter: {} };
 
-  <style>
-    :root {
-      --bg: #0b0b0d;
-      --page-bg: #15121a;
-      --panel: #242228;
-      --panel-2: #343139;
-      --panel-3: #47434d;
-      --text: #f2f0ec;
-      --muted: #c9c4bd;
-      --purple: #544268;
-      --purple-2: #6d5883;
-      --gold: #e7e5df;
-      --black: #050605;
-      --border: rgba(231, 229, 223, 0.34);
-      --border-soft: rgba(231, 229, 223, 0.16);
-      --shadow: rgba(0, 0, 0, 0.62);
-      --good: #9ec782;
-      --warn: #d6b96b;
-      --danger: #c97a7a;
-      --radius: 16px;
-      --card-size: 118px;
+  const action = String(e.parameter.action || "index").trim();
+  const callback = String(e.parameter.callback || "callback").trim();
+
+  let data;
+
+  try {
+    if (action === "meta") {
+      data = getEbonmarchDashboardMeta();
+    } else if (action === "detail") {
+      data = getEbonmarchPlayerDetail_(e.parameter.id);
+    } else if (action === "queueRefresh") {
+      data = queueEbonmarchRefresh_(e.parameter);
+    } else if (action === "processQueue") {
+      data = processEbonmarchRefreshQueue();
+    } else {
+      data = getEbonmarchPlayerIndex_();
     }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: Georgia, "Times New Roman", serif;
-      color: var(--text);
-      background:
-        radial-gradient(circle at top left, rgba(84, 66, 104, 0.58), transparent 34%),
-        radial-gradient(circle at bottom right, rgba(231, 229, 223, 0.12), transparent 30%),
-        linear-gradient(135deg, var(--black) 0%, var(--page-bg) 52%, #2a2034 100%);
-    }
-
-    button,
-    input,
-    select {
-      font: inherit;
-    }
-
-    .shell {
-      width: min(1500px, calc(100% - 28px));
-      margin: 0 auto;
-      padding: 18px 0 42px;
-    }
-
-    .hero {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 18px;
-      align-items: center;
-      padding: 20px;
-      margin-bottom: 16px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      background: linear-gradient(135deg, rgba(84, 66, 104, 0.95), rgba(36, 34, 40, 0.96));
-      box-shadow: 0 12px 35px var(--shadow);
-    }
-
-    h1,
-    h2,
-    h3 {
-      margin: 0;
-    }
-
-    h1 {
-      font-size: clamp(2rem, 4vw, 3.4rem);
-      color: var(--text);
-      line-height: 1;
-    }
-
-    .hero p {
-      margin: 8px 0 0;
-      color: var(--muted);
-    }
-
-    .status {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 14px;
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      background: rgba(0,0,0,0.24);
-      white-space: nowrap;
-    }
-
-    .dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 999px;
-      background: var(--warn);
-      box-shadow: 0 0 10px var(--warn);
-    }
-
-    .dot.ready {
-      background: var(--good);
-      box-shadow: 0 0 10px var(--good);
-    }
-
-    .dot.error {
-      background: var(--danger);
-      box-shadow: 0 0 10px var(--danger);
-    }
-
-    .tabs {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 16px;
-    }
-
-    .tab-btn,
-    .btn {
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      color: var(--text);
-      background: rgba(0,0,0,0.24);
-      padding: 10px 14px;
-      cursor: pointer;
-    }
-
-    .tab-btn.active,
-    .btn.primary {
-      background: rgba(84, 66, 104, 0.95);
-      border-color: var(--gold);
-    }
-
-    .layout {
-      display: grid;
-      grid-template-columns: 1fr 380px;
-      gap: 16px;
-      align-items: start;
-    }
-
-    .panel {
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      background: rgba(36, 34, 40, 0.96);
-      box-shadow: 0 10px 30px var(--shadow);
-      overflow: hidden;
-    }
-
-    .panel-head {
-      padding: 14px 16px;
-      border-bottom: 1px solid var(--border-soft);
-      background: linear-gradient(180deg, rgba(71, 67, 77, 0.98), rgba(36, 34, 40, 0.98));
-    }
-
-    .panel-head p {
-      margin: 6px 0 0;
-      color: var(--muted);
-    }
-
-    .panel-body {
-      padding: 16px;
-    }
-
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-      margin-bottom: 16px;
-    }
-
-    .stat-card {
-      padding: 16px;
-      border: 1px solid var(--border-soft);
-      border-radius: 14px;
-      background: rgba(0,0,0,0.18);
-      text-align: center;
-    }
-
-    .stat-card strong {
-      display: block;
-      color: var(--gold);
-      font-size: 1.8rem;
-      line-height: 1;
-    }
-
-    .stat-card span {
-      display: block;
-      color: var(--muted);
-      margin-top: 6px;
-      font-size: 0.84rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .toolbar {
-      display: grid;
-      grid-template-columns: 1fr auto auto;
-      gap: 10px;
-      margin-bottom: 14px;
-    }
-
-    input,
-    select {
-      width: 100%;
-      min-height: 42px;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 9px 10px;
-      color: var(--text);
-      background: #141316;
-      outline: none;
-    }
-
-    input:focus,
-    select:focus {
-      border-color: var(--gold);
-      box-shadow: 0 0 0 3px rgba(231,229,223,0.12);
-    }
-
-    .player-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(var(--card-size), 1fr));
-      gap: 10px;
-      max-height: 68vh;
-      overflow-y: auto;
-      padding-right: 4px;
-    }
-
-    .player-card {
-      min-height: var(--card-size);
-      border: 1px solid rgba(231, 229, 223, 0.24);
-      border-radius: 13px;
-      color: var(--text);
-      background: linear-gradient(145deg, rgba(71, 67, 77, 0.98), rgba(10, 10, 12, 0.98));
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03), 0 7px 16px rgba(0,0,0,0.25);
-      cursor: pointer;
-      padding: 10px;
-      display: grid;
-      gap: 8px;
-      align-content: center;
-      text-align: center;
-    }
-
-    .player-card:hover,
-    .player-card.selected {
-      border-color: var(--gold);
-      transform: translateY(-1px);
-    }
-
-    .player-name {
-      color: var(--text);
-      font-weight: 700;
-      line-height: 1.15;
-      overflow-wrap: anywhere;
-    }
-
-    .player-meta {
-      color: var(--muted);
-      font-size: 0.76rem;
-      line-height: 1.25;
-    }
-
-    .detail-title {
-      font-size: 1.6rem;
-      color: var(--text);
-    }
-
-    .detail-list {
-      display: grid;
-      gap: 10px;
-    }
-
-    .detail-row {
-      border-bottom: 1px solid rgba(231,229,223,0.12);
-      padding-bottom: 8px;
-    }
-
-    .detail-row strong {
-      color: var(--gold);
-      display: block;
-      margin-bottom: 2px;
-    }
-
-    .detail-row span {
-      color: var(--muted);
-    }
-
-    .award-section {
-      border: 1px solid var(--border-soft);
-      border-radius: 12px;
-      background: rgba(0,0,0,0.14);
-      overflow: hidden;
-    }
-
-    .award-section h3 {
-      padding: 10px 12px;
-      border-bottom: 1px solid var(--border-soft);
-      background: rgba(84,66,104,0.38);
-      color: var(--gold);
-      font-size: 1rem;
-    }
-
-    .award-list {
-      display: grid;
-      gap: 0;
-      padding: 8px 12px 12px;
-    }
-
-    .award-item {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      padding: 7px 0;
-      border-bottom: 1px solid rgba(231,229,223,0.1);
-      color: var(--muted);
-    }
-
-    .award-item:last-child {
-      border-bottom: 0;
-    }
-
-    .award-item strong {
-      color: var(--text);
-    }
-
-    .award-level {
-      color: var(--gold);
-      white-space: nowrap;
-      font-weight: 700;
-    }
-
-    .view {
-      display: none;
-    }
-
-    .view.active {
-      display: block;
-    }
-
-    .note {
-      color: var(--muted);
-    }
-
-    .skeleton {
-      min-height: 110px;
-      border-radius: 14px;
-      background: linear-gradient(90deg, rgba(255,255,255,0.05), rgba(255,255,255,0.11), rgba(255,255,255,0.05));
-      background-size: 200% 100%;
-      animation: shimmer 1.2s infinite;
-    }
-
-    @keyframes shimmer {
-      0% { background-position: 200% 0; }
-      100% { background-position: -200% 0; }
-    }
-
-    #splashScreen {
-      position: fixed;
-      inset: 0;
-      z-index: 9999;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background:
-        url("ebonmarch.jpg") center center / contain no-repeat,
-        radial-gradient(circle at center, rgba(84,66,104,0.32), transparent 55%),
-        #0b0b0d;
-      opacity: 1;
-      transition: opacity 1.2s ease;
-    }
-
-    #splashScreen.fade {
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    #splashScreen::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle at center, rgba(255,255,255,0.03), transparent 60%);
-      pointer-events: none;
-    }
-
-    .splash-inner {
-      position: absolute;
-      left: 50%;
-      bottom: 7vh;
-      transform: translateX(-50%);
-      text-align: center;
-      width: min(92vw, 520px);
-      padding: 22px;
-      border: 1px solid rgba(231,229,223,0.22);
-      border-radius: 18px;
-      background: rgba(0,0,0,0.42);
-      backdrop-filter: blur(4px);
-      box-shadow: 0 18px 40px rgba(0,0,0,0.45);
-    }
-
-    .splash-inner h1 {
-      margin-bottom: 12px;
-      color: var(--gold);
-    }
-
-    .splash-inner p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 1rem;
-      letter-spacing: 0.04em;
-    }
-
-    .loading-bar {
-      width: 240px;
-      height: 10px;
-      margin: 18px auto 0;
-      border-radius: 999px;
-      overflow: hidden;
-      background: rgba(255,255,255,0.08);
-    }
-
-    .loading-fill {
-      width: 40%;
-      height: 100%;
-      border-radius: 999px;
-      background: linear-gradient(90deg, rgba(84,66,104,0.95), rgba(231,229,223,0.9));
-      animation: loadingMove 1.2s infinite ease-in-out;
-    }
-
-    @keyframes loadingMove {
-      0% { transform: translateX(-120%); }
-      100% { transform: translateX(320%); }
-    }
-
-    @media (max-width: 980px) {
-      #splashScreen {
-        background-size: contain;
-        background-position: center center;
-      }
-
-      .splash-inner {
-        width: min(92vw, 420px);
-        padding: 22px;
-      }
-
-      .loading-bar {
-        width: 180px;
-      }
-
-      .hero,
-      .layout,
-      .stats,
-      .toolbar {
-        grid-template-columns: 1fr;
-      }
-
-      .player-grid {
-        max-height: none;
-      }
-    }
-  </style>
-</head>
-<body>
-  <div id="splashScreen">
-    <div class="splash-inner">
-      <h1>Grand Duchy of Ebonmarch</h1>
-      <p>Loading Duchy Records...</p>
-      <div class="loading-bar">
-        <div class="loading-fill"></div>
-      </div>
-    </div>
-  </div>
-
-  <main class="shell">
-    <header class="hero">
-      <div>
-        <h1>Grand Duchy of Ebonmarch</h1>
-        <p>Live duchy roster and award lookup powered by the Ebonmarch cache, with JSORK verification.</p>
-      </div>
-      <div class="status">
-        <span id="statusDot" class="dot"></span>
-        <span id="statusText">Loading...</span>
-      </div>
-    </header>
-
-    <nav class="tabs">
-      <button class="tab-btn active" data-view="roster">Roster</button>
-      <button class="tab-btn" data-view="search">ORK Search</button>
-      <button class="tab-btn" data-view="about">About</button>
-    </nav>
-
-    <section id="roster" class="view active">
-      <div class="stats">
-        <div class="stat-card"><strong id="statRoster">0</strong><span>12 Month Active</span></div>
-        <div class="stat-card"><strong id="statActive">0</strong><span>Shown</span></div>
-        <div class="stat-card"><strong id="statPark">7</strong><span>Parks</span></div>
-        <div class="stat-card"><strong id="statUpdated">—</strong><span>Updated</span></div>
-      </div>
-
-      <div class="layout">
-        <div class="panel">
-          <div class="panel-head">
-            <h2>Ebonmarch Players</h2>
-            <p>Search cache first. If no match is found, the page searches ORK and queues new players for refresh.</p>
-          </div>
-          <div class="panel-body">
-            <div class="toolbar">
-              <input id="searchInput" type="search" placeholder="Search persona..." />
-              <select id="parkFilter">
-                <option value="">All Parks</option>
-              </select>
-              <button id="refreshBtn" class="btn primary" type="button">Refresh</button>
-            </div>
-            <div id="playerGrid" class="player-grid">
-              <div class="skeleton"></div>
-              <div class="skeleton"></div>
-              <div class="skeleton"></div>
-            </div>
-          </div>
-        </div>
-
-        <aside class="panel">
-          <div class="panel-head">
-            <h2>Player Detail</h2>
-            <p>Cached detail loads first. JSORK verifies in the background.</p>
-          </div>
-          <div id="detailBody" class="panel-body">
-            <p class="note">Select a player from the roster.</p>
-          </div>
-        </aside>
-      </div>
-    </section>
-
-    <section id="search" class="view">
-      <div class="panel">
-        <div class="panel-head">
-          <h2>ORK Player Search</h2>
-          <p>Search all ORK players. Selecting a result queues them for Ebonmarch cache refresh.</p>
-        </div>
-        <div class="panel-body">
-          <div class="toolbar" style="grid-template-columns:1fr auto;">
-            <input id="globalSearchInput" type="search" placeholder="Type at least 2 letters..." />
-            <button id="globalSearchBtn" class="btn primary" type="button">Search</button>
-          </div>
-          <div id="globalResults" class="player-grid"></div>
-        </div>
-      </div>
-    </section>
-
-    <section id="about" class="view">
-      <div class="panel">
-        <div class="panel-head">
-          <h2>About This Dashboard</h2>
-          <p>This version uses Google Sheets for fast loading and JSORK for live ORK backup checks.</p>
-        </div>
-        <div class="panel-body detail-list">
-          <div class="detail-row"><strong>Frontend</strong><span>GitHub Pages</span></div>
-          <div class="detail-row"><strong>Primary Data</strong><span>Google Sheets Ebonmarch cache</span></div>
-          <div class="detail-row"><strong>Verification</strong><span>JSORK + Amtgard ORK JSON API</span></div>
-          <div class="detail-row"><strong>Missing Players</strong><span>Search falls back to JSORK and queues selected players for refresh.</span></div>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <script defer src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  <script defer src="jsork.js"></script>
-
-  <script defer>
-    "use strict";
-
-    const API_URL = "https://script.google.com/macros/s/AKfycbxO5_gSiFx6aj9nMDrfNvhlbev_CZh383ARjk0pZO-BxhwAbtIVxaO0gKp2cImHPJPK/exec";
-
-    const EBONMARCH_PARKS = [
-      { id: 655, name: "The Mire" },
-      { id: 714, name: "Grim Garrison" },
-      { id: 797, name: "Direwolf's Rest" },
-      { id: 146, name: "Five Oaks" },
-      { id: 865, name: "Kirin Grove" },
-      { id: 822, name: "Ebonmarch" },
-      { id: 161, name: "Storm Bridge" }
-    ];
-
-    const DUCHY_NAME = "Ebonmarch";
-
-    const AWARD_MAP = {
-      21: "Rose",
-      22: "Smith",
-      23: "Lion",
-      24: "Owl",
-      25: "Dragon",
-      26: "Garber",
-      27: "Warrior",
-      28: "Jovius",
-      29: "Mask",
-      33: "Gryphon",
-      239: "Crown"
+  } catch (err) {
+    data = {
+      error: true,
+      ok: false,
+      message: err.message || String(err),
+      stack: err.stack || ""
     };
-
-    const MASTER_MAP = {
-      1: "Rose",
-      2: "Smith",
-      3: "Lion",
-      4: "Owl",
-      5: "Dragon",
-      6: "Garber",
-      7: "Jovius",
-      9: "Mask",
-      11: "Gryphon",
-      12: "Warrior",
-      240: "Crown"
-    };
-
-    const PARAGON_MAP = {
-      37: "Anti-Paladin",
-      38: "Archer",
-      39: "Assassin",
-      40: "Barbarian",
-      41: "Bard",
-      42: "Druid",
-      43: "Healer",
-      44: "Monk",
-      46: "Paladin",
-      49: "Scout",
-      50: "Warrior",
-      51: "Wizard"
-    };
-
-    const els = {};
-    let activePlayers = [];
-    let selectedPlayerKey = "";
-    let cacheIndex = null;
-    let lastFallbackQuery = "";
-    const playerDetailCache = new Map();
-
-    window.addEventListener("DOMContentLoaded", () => {
-      cacheEls();
-      bindEvents();
-      setStatus("loading", "Page ready");
-    });
-
-    window.addEventListener("load", () => {
-      requestAnimationFrame(() => {
-        loadDashboardFromCache();
-      });
-    });
-
-    function cacheEls() {
-      els.statusDot = document.getElementById("statusDot");
-      els.statusText = document.getElementById("statusText");
-      els.playerGrid = document.getElementById("playerGrid");
-      els.detailBody = document.getElementById("detailBody");
-      els.searchInput = document.getElementById("searchInput");
-      els.parkFilter = document.getElementById("parkFilter");
-      els.refreshBtn = document.getElementById("refreshBtn");
-      els.statRoster = document.getElementById("statRoster");
-      els.statActive = document.getElementById("statActive");
-      els.statPark = document.getElementById("statPark");
-      els.statUpdated = document.getElementById("statUpdated");
-      els.globalSearchInput = document.getElementById("globalSearchInput");
-      els.globalSearchBtn = document.getElementById("globalSearchBtn");
-      els.globalResults = document.getElementById("globalResults");
-    }
-
-    function bindEvents() {
-      document.querySelectorAll(".tab-btn").forEach(btn => {
-        btn.addEventListener("click", () => showView(btn.dataset.view));
-      });
-
-      els.searchInput.addEventListener("input", debounce(applyRosterFilters, 200));
-      els.parkFilter.addEventListener("change", applyRosterFilters);
-      els.refreshBtn.addEventListener("click", () => {
-        playerDetailCache.clear();
-        loadDashboardFromCache(true);
-      });
-      els.globalSearchBtn.addEventListener("click", runGlobalSearch);
-      els.globalSearchInput.addEventListener("keydown", event => {
-        if (event.key === "Enter") runGlobalSearch();
-      });
-    }
-
-    function hasJsork() {
-      return Boolean(window.jsork && jsork.player && jsork.player.getAwards && jsork.searchservice && jsork.searchservice.searchPlayer);
-    }
-
-    async function loadDashboardFromCache(force = false) {
-      setStatus("loading", force ? "Refreshing sheet cache..." : "Loading sheet cache...");
-      renderGrid([], "Loading Ebonmarch cache...");
-
-      try {
-        const data = await jsonp(API_URL, {});
-
-        if (data.error || data.ok === false) {
-          throw new Error(data.message || "Cache load failed");
-        }
-
-        cacheIndex = data;
-        activePlayers = normalizeCachePlayers(data.players || []);
-
-        els.statRoster.textContent = activePlayers.length;
-        els.statActive.textContent = activePlayers.length;
-        els.statPark.textContent = (data.parks && data.parks.length) || EBONMARCH_PARKS.length;
-        els.statUpdated.textContent = formatUpdated(data.updatedAt);
-        populateParkFilter(data.parks || []);
-
-        applyRosterFilters();
-        hideSplash();
-        setStatus("ready", `Ready · ${activePlayers.length} cached active players`);
-      } catch (err) {
-        hideSplash();
-        setStatus("error", "Sheet cache failed");
-        renderGrid([], "Could not load the Google Sheet cache. Check the Apps Script URL and deployment.");
-      }
-    }
-
-    function normalizeCachePlayers(players) {
-      return players.map(player => ({
-        name: String(player.name || player.player || "").trim(),
-        mundaneId: String(player.id || player.playerId || "").trim(),
-        park: String(player.park || "").trim(),
-        kingdom: String(player.kingdom || "Rising Winds").trim(),
-        active: String(player.lastSignIn || "Active").trim(),
-        signIns: Number(player.signIns || 0),
-        lastSignIn: String(player.lastSignIn || "").trim(),
-        totalAwards: Number(player.totalAwards || 0),
-        awardKeys: Array.isArray(player.awardKeys) ? player.awardKeys : [],
-        masterhoodKeys: Array.isArray(player.masterhoodKeys) ? player.masterhoodKeys : [],
-        paragonKeys: Array.isArray(player.paragonKeys) ? player.paragonKeys : [],
-        raw: player
-      })).filter(player => player.name)
-        .sort((a, b) => a.name.localeCompare(b.name));
-    }
-
-    function applyRosterFilters() {
-      const search = els.searchInput.value.trim().toLowerCase();
-      const selectedPark = els.parkFilter.value.trim().toLowerCase();
-
-      const players = activePlayers.filter(player => {
-        const matchesSearch = !search || player.name.toLowerCase().includes(search) || player.park.toLowerCase().includes(search);
-        const matchesPark = !selectedPark || player.park.toLowerCase() === selectedPark;
-        return matchesSearch && matchesPark;
-      });
-
-      els.statActive.textContent = players.length;
-      renderGrid(players);
-
-      if (search.length >= 2 && players.length === 0 && search !== lastFallbackQuery) {
-        lastFallbackQuery = search;
-        searchJsorkFallback(search);
-      }
-
-      if (players.length > 0) {
-        lastFallbackQuery = "";
-      }
-    }
-
-    function populateParkFilter(parks) {
-      const knownParks = parks && parks.length
-        ? parks
-        : Array.from(new Set(activePlayers.map(player => player.park).filter(Boolean))).sort();
-
-      const current = els.parkFilter.value;
-      els.parkFilter.innerHTML = `<option value="">All Parks</option>`;
-
-      knownParks.forEach(park => {
-        const option = document.createElement("option");
-        option.value = park;
-        option.textContent = park;
-        els.parkFilter.appendChild(option);
-      });
-
-      els.parkFilter.value = knownParks.includes(current) ? current : "";
-    }
-
-    async function searchJsorkFallback(query) {
-      if (!hasJsork()) {
-        renderGrid([], "No cached match found. JSORK is not available.");
-        return;
-      }
-
-      els.playerGrid.innerHTML = `<p class="note">No cached match found. Searching ORK...</p>`;
-
-      try {
-        const raw = await jsork.searchservice.searchPlayer(query);
-        const results = normalizeSearchResults(raw).slice(0, 10);
-
-        if (!results.length) {
-          renderGrid([], "No cached or ORK match found.");
-          return;
-        }
-
-        renderJsorkFallbackResults(results);
-      } catch (err) {
-        renderGrid([], "No cached match found, and ORK search failed.");
-      }
-    }
-
-    function renderJsorkFallbackResults(players) {
-      const fragment = document.createDocumentFragment();
-
-      players.forEach(player => {
-        const card = document.createElement("button");
-        card.type = "button";
-        card.className = "player-card";
-        card.innerHTML = `
-          <span class="player-name">${escapeHtml(player.name)}</span>
-          <span class="player-meta">${escapeHtml([player.park, player.kingdom, "ORK Result"].filter(Boolean).join(" · "))}</span>
-        `;
-        card.addEventListener("click", () => {
-          const cacheLikePlayer = {
-            name: player.name,
-            mundaneId: player.mundaneId,
-            park: player.park,
-            kingdom: player.kingdom,
-            active: "ORK Search Result",
-            raw: player.raw
-          };
-          selectPlayer(cacheLikePlayer);
-          queueRefresh(cacheLikePlayer, "cache-miss-search");
-        });
-        fragment.appendChild(card);
-      });
-
-      els.statActive.textContent = players.length;
-      els.playerGrid.innerHTML = "";
-      els.playerGrid.appendChild(fragment);
-    }
-
-    function renderGrid(players, emptyMessage = "No players found.") {
-      if (!players.length) {
-        els.playerGrid.innerHTML = `<p class="note">${escapeHtml(emptyMessage)}</p>`;
-        return;
-      }
-
-      const fragment = document.createDocumentFragment();
-
-      players.forEach(player => {
-        const card = document.createElement("button");
-        card.type = "button";
-        card.className = "player-card" + (playerKey(player) === selectedPlayerKey ? " selected" : "");
-        card.innerHTML = `
-          <span class="player-name">${escapeHtml(player.name)}</span>
-          <span class="player-meta">${escapeHtml(player.park || player.kingdom || "")}</span>
-        `;
-        card.addEventListener("click", () => selectPlayer(player));
-        fragment.appendChild(card);
-      });
-
-      els.playerGrid.innerHTML = "";
-      els.playerGrid.appendChild(fragment);
-    }
-
-    async function selectPlayer(player) {
-      selectedPlayerKey = playerKey(player);
-      applyRosterFilters();
-
-      els.detailBody.innerHTML = `
-        <h3 class="detail-title">${escapeHtml(player.name)}</h3>
-        <p class="note">Loading cached player detail...</p>
-      `;
-
-      const id = player.mundaneId || player.name;
-
-      if (playerDetailCache.has(id)) {
-        renderCachedPlayerDetail(playerDetailCache.get(id));
-        verifyPlayerWithJsork(player);
-        return;
-      }
-
-      try {
-        const detail = await jsonp(API_URL, { action: "detail", id });
-
-        if (detail.error || detail.ok === false) {
-          throw new Error(detail.message || "Detail not found");
-        }
-
-        const normalized = normalizeCacheDetail(detail, player);
-        playerDetailCache.set(id, normalized);
-        renderCachedPlayerDetail(normalized);
-        verifyPlayerWithJsork(player);
-      } catch (err) {
-        renderPlayerDetailFromIndex(player);
-        verifyPlayerWithJsork(player);
-      }
-    }
-
-    function normalizeCacheDetail(detail, fallbackPlayer) {
-      const player = {
-        name: detail.name || fallbackPlayer.name,
-        mundaneId: detail.id || fallbackPlayer.mundaneId,
-        park: detail.park || fallbackPlayer.park,
-        kingdom: detail.kingdom || fallbackPlayer.kingdom,
-        lastSignIn: detail.lastSignIn || fallbackPlayer.lastSignIn,
-        signIns: Number(detail.signIns || fallbackPlayer.signIns || 0),
-        totalAwards: Number(detail.totalAwards || fallbackPlayer.totalAwards || 0),
-        ork: detail.ork || ""
-      };
-
-      const awards = Array.isArray(detail.awards)
-        ? detail.awards.map(item => ({ name: item.name, value: item.count || item.value || 0 }))
-        : [];
-
-      const masterhoods = Array.isArray(detail.masterhoods)
-        ? detail.masterhoods.map(name => ({ name, value: "Master" }))
-        : [];
-
-      const paragons = Array.isArray(detail.paragons)
-        ? detail.paragons.map(name => ({ name, value: "Paragon" }))
-        : [];
-
-      return { player, awards, masterhoods, paragons, source: "sheet" };
-    }
-
-    function renderCachedPlayerDetail(detail) {
-      const player = detail.player;
-      const orkUrl = player.ork || (player.mundaneId ? `https://ork.amtgard.com/orkui/index.php?Route=Player/index/${encodeURIComponent(player.mundaneId)}` : "");
-
-      els.detailBody.innerHTML = `
-        <div class="detail-list">
-          <div>
-            <h3 class="detail-title">${escapeHtml(player.name)}</h3>
-            <p class="note">${escapeHtml(player.park || DUCHY_NAME)} · ${escapeHtml(player.kingdom || "Rising Winds")}</p>
-          </div>
-          <div class="detail-row"><strong>Player ID</strong><span>${escapeHtml(player.mundaneId || "Not listed")}</span></div>
-          <div class="detail-row"><strong>Last Sign-In</strong><span>${escapeHtml(player.lastSignIn || "Not listed")}</span></div>
-          <div class="detail-row"><strong>Total Awards</strong><span>${escapeHtml(String(player.totalAwards || 0))}</span></div>
-          ${orkUrl ? `<a class="btn primary" href="${orkUrl}" target="_blank" rel="noopener">Open ORK Profile</a>` : ""}
-          ${renderAwardSection("Award Levels", detail.awards, "No ladder awards listed.")}
-          ${renderAwardSection("Masterhoods", detail.masterhoods, "No masterhoods listed.")}
-          ${renderAwardSection("Paragons", detail.paragons, "No paragons listed.")}
-        </div>
-      `;
-    }
-
-    function renderPlayerDetailFromIndex(player) {
-      const awards = (player.awardKeys || []).map(key => ({
-        name: labelAward(key),
-        value: player.masterhoodKeys.some(m => String(m).toLowerCase().includes(labelAward(key).toLowerCase())) ? 10 : "Listed"
-      }));
-
-      const detail = {
-        player,
-        awards,
-        masterhoods: (player.masterhoodKeys || []).map(name => ({ name, value: "Master" })),
-        paragons: (player.paragonKeys || []).map(name => ({ name, value: "Paragon" })),
-        source: "index"
-      };
-
-      renderCachedPlayerDetail(detail);
-    }
-
-    async function verifyPlayerWithJsork(player) {
-      if (!hasJsork() || !player.name) return;
-
-      try {
-        if (!player.mundaneId) {
-          const results = await jsork.searchservice.searchPlayer(player.name);
-          const match = normalizeSearchResults(results).find(result => result.name.toLowerCase() === player.name.toLowerCase());
-          if (match && match.mundaneId) {
-            queueRefresh(match, "missing-id");
-          }
-          return;
-        }
-
-        const awards = await withTimeout(jsork.player.getAwards(Number(player.mundaneId), jsork.awardIDs.ALL), 8000);
-        const parsed = parseAwards(awards || []);
-        const sheetDetail = playerDetailCache.get(player.mundaneId || player.name);
-
-        if (!sheetDetail) return;
-
-        const sheetAwardCount = sheetDetail.awards.length + sheetDetail.masterhoods.length + sheetDetail.paragons.length;
-        const liveAwardCount = parsed.awardLevels.length + parsed.masterhoods.length + parsed.paragons.length;
-
-        if (Math.abs(liveAwardCount - sheetAwardCount) >= 1) {
-          queueRefresh(player, "award-mismatch");
-        }
-      } catch (err) {
-        console.warn("JSORK verification failed", err);
-      }
-    }
-
-    async function queueRefresh(player, reason) {
-      const payload = {
-        action: "queueRefresh",
-        playerId: player.mundaneId || player.id || "",
-        playerName: player.name || "",
-        park: player.park || "",
-        kingdom: player.kingdom || "",
-        reason
-      };
-
-      try {
-        await jsonp(API_URL, payload);
-      } catch (err) {
-        console.warn("Could not queue refresh", err);
-      }
-    }
-
-    function parseAwards(awards) {
-      const levels = {};
-      const masterhoods = [];
-      const paragons = [];
-
-      awards.forEach(award => {
-        const awardId = Number(award.AwardId || award.awardId || award.AwardsId || award.awardsId || 0);
-        const rank = Number(award.Rank || award.rank || 0);
-
-        if (AWARD_MAP[awardId]) {
-          const name = AWARD_MAP[awardId];
-          levels[name] = Math.max(levels[name] || 0, rank || 1);
-        }
-
-        if (MASTER_MAP[awardId]) {
-          const name = MASTER_MAP[awardId];
-          if (!masterhoods.includes(name)) masterhoods.push(name);
-          levels[name] = Math.max(levels[name] || 0, 10);
-        }
-
-        if (PARAGON_MAP[awardId]) {
-          const name = PARAGON_MAP[awardId];
-          if (!paragons.includes(name)) paragons.push(name);
-        }
-      });
-
-      const awardLevels = Object.keys(levels)
-        .sort((a, b) => a.localeCompare(b))
-        .map(name => ({ name, value: levels[name] }));
+  }
+
+  return ContentService
+    .createTextOutput(callback + "(" + JSON.stringify(data) + ")")
+    .setMimeType(ContentService.MimeType.JAVASCRIPT);
+}
+
+function getEbonmarchPlayerIndex_() {
+  const rows = getEbonmarchDashboardData();
+  const meta = getEbonmarchDashboardMeta();
+
+  return {
+    ok: true,
+    updatedAt: new Date().toISOString(),
+    parks: [...new Set(rows.map(r => r.park).filter(Boolean))].sort(),
+    awardTypes: meta.awardOptions,
+    masterhoodTypes: meta.masterhoodTypes,
+    paragonTypes: meta.paragonClasses,
+    players: rows.map(r => {
+      const masterhoods = splitDashboardList_(r.masterhoods);
 
       return {
-        awardLevels,
-        masterhoods: masterhoods.sort().map(name => ({ name, value: "Master" })),
-        paragons: paragons.sort().map(name => ({ name, value: "Paragon" }))
+        id: r.playerId || r.player,
+        name: r.player,
+        park: r.park,
+        kingdom: r.kingdom,
+        lastSignIn: r.lastSignIn,
+        signIns: r.signIns,
+        totalAwards: adjustedTotalAwards_(r),
+        awardKeys: meta.awardOptions.filter(key => {
+          const value = Number(r[key] || 0);
+          const hasMasterhood = hasMasterhoodForAward_(masterhoods, key);
+          return value > 0 || hasMasterhood;
+        }),
+        masterhoodKeys: masterhoods,
+        paragonKeys: splitDashboardList_(r.paragons),
+        hasAwards: Number(r.totalAwards || 0) > 0,
+        hasMasterhoods: masterhoods.length > 0,
+        hasParagons: Boolean(r.paragons)
       };
-    }
+    })
+  };
+}
 
-    function renderAwardSection(title, rows, emptyText) {
-      if (!rows || !rows.length) {
-        return `
-          <section class="award-section">
-            <h3>${escapeHtml(title)}</h3>
-            <div class="award-list"><p class="note">${escapeHtml(emptyText)}</p></div>
-          </section>
-        `;
-      }
+function getEbonmarchPlayerDetail_(id) {
+  const rows = getEbonmarchDashboardData();
+  const meta = getEbonmarchDashboardMeta();
+  const lookup = String(id || "").trim();
 
-      return `
-        <section class="award-section">
-          <h3>${escapeHtml(title)}</h3>
-          <div class="award-list">
-            ${rows.map(row => `
-              <div class="award-item">
-                <strong>${escapeHtml(row.name)}</strong>
-                <span class="award-level">${escapeHtml(row.value)}</span>
-              </div>
-            `).join("")}
-          </div>
-        </section>
-      `;
-    }
+  const player = rows.find(r =>
+    String(r.playerId || r.player) === lookup ||
+    String(r.player || "").toLowerCase() === lookup.toLowerCase()
+  );
 
-    async function runGlobalSearch() {
-      const query = els.globalSearchInput.value.trim();
+  if (!player) {
+    return {
+      error: true,
+      ok: false,
+      message: "Player not found: " + lookup
+    };
+  }
 
-      if (query.length < 2) {
-        els.globalResults.innerHTML = `<p class="note">Type at least 2 letters.</p>`;
-        return;
-      }
+  const masterhoods = splitDashboardList_(player.masterhoods);
 
-      if (!hasJsork()) {
-        els.globalResults.innerHTML = `<p class="note">JSORK is not available.</p>`;
-        return;
-      }
-
-      els.globalResults.innerHTML = `<p class="note">Searching ORK...</p>`;
-
-      try {
-        const raw = await jsork.searchservice.searchPlayer(query);
-        const players = normalizeSearchResults(raw).slice(0, 20);
-        renderGlobalResults(players);
-      } catch (err) {
-        els.globalResults.innerHTML = `<p class="note">Could not search ORK.</p>`;
-      }
-    }
-
-    function normalizeSearchResults(raw) {
-      if (!Array.isArray(raw)) return [];
-
-      return raw.map(item => {
-        const name = item.Persona || item.persona || item.Name || item.name || item.Player || item.player || item.label || "";
-        const kingdom = item.Kingdom || item.kingdom || item.KingdomName || item.kingdom_name || "";
-        const park = item.Park || item.park || item.ParkName || item.park_name || "";
-        const mundaneId = item.MundaneId || item.mundaneId || item.PlayerId || item.playerId || "";
+  return {
+    ok: true,
+    id: player.playerId || player.player,
+    name: player.player,
+    park: player.park,
+    kingdom: player.kingdom,
+    lastSignIn: player.lastSignIn,
+    signIns: player.signIns,
+    totalAwards: adjustedTotalAwards_(player),
+    ork: player.ork,
+    awards: meta.awardOptions
+      .filter(key => {
+        const value = Number(player[key] || 0);
+        const hasMasterhood = hasMasterhoodForAward_(masterhoods, key);
+        return value > 0 || hasMasterhood;
+      })
+      .map(key => {
+        const base = Number(player[key] || 0);
+        const hasMasterhood = hasMasterhoodForAward_(masterhoods, key);
 
         return {
-          name: String(name || "").trim(),
-          kingdom: String(kingdom || "").trim(),
-          park: String(park || "").trim(),
-          mundaneId: String(mundaneId || "").trim(),
-          raw: item
+          name: labelAward_(key),
+          count: hasMasterhood ? Math.max(base, 10) : base
         };
-      }).filter(player => player.name);
+      }),
+    masterhoods: masterhoods,
+    paragons: splitDashboardList_(player.paragons)
+  };
+}
+
+function getEbonmarchDashboardData() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheetByName(getEbonmarchDashboardSheetName_());
+
+  if (!sheet) {
+    throw new Error("Missing dashboard sheet: " + getEbonmarchDashboardSheetName_());
+  }
+
+  const values = sheet.getDataRange().getValues();
+  if (values.length < 2) return [];
+
+  const h = headerMap_(values[0]);
+  const rows = [];
+
+  for (let i = 1; i < values.length; i++) {
+    const row = values[i];
+    const player = getByHeader_(row, h, "Player");
+
+    if (!player) continue;
+
+    rows.push({
+      playerId: getByHeader_(row, h, "Player ID"),
+      player: decodeHtml_(player),
+      park: decodeHtml_(getByHeader_(row, h, "Park")),
+      kingdom: decodeHtml_(getByHeader_(row, h, "Kingdom")),
+      lastSignIn: formatDateForDashboard_(getRawByHeader_(row, h, "Last Sign-In")),
+      signIns: Number(getByHeader_(row, h, "Sign-Ins Past 12 Months") || 0),
+      totalAwards: Number(getByHeader_(row, h, "Total Awards") || 0),
+      battle: Number(getByHeader_(row, h, "Battle") || 0),
+      warrior: Number(getByHeader_(row, h, "Warrior") || 0),
+      crown: Number(getByHeader_(row, h, "Crown") || 0),
+      dragon: Number(getByHeader_(row, h, "Dragon") || 0),
+      garber: Number(getByHeader_(row, h, "Garber") || 0),
+      owl: Number(getByHeader_(row, h, "Owl") || 0),
+      rose: Number(getByHeader_(row, h, "Rose") || 0),
+      smith: Number(getByHeader_(row, h, "Smith") || 0),
+      lion: Number(getByHeader_(row, h, "Lion") || 0),
+      gryphon: Number(getByHeader_(row, h, "Gryphon") || 0),
+      jovius: Number(getByHeader_(row, h, "Jovius") || 0),
+      mask: Number(getByHeader_(row, h, "Mask") || 0),
+      paragons: getByHeader_(row, h, "Paragons"),
+      masterhoods: getByHeader_(row, h, "Masterhoods"),
+      ork: getByHeader_(row, h, "ORK URL")
+    });
+  }
+
+  return rows;
+}
+
+function getEbonmarchDashboardMeta() {
+  return {
+    ok: true,
+    title: "Grand Duchy of Ebonmarch Dashboard",
+    awardOptions: [
+      "battle",
+      "warrior",
+      "crown",
+      "dragon",
+      "garber",
+      "owl",
+      "rose",
+      "smith",
+      "lion",
+      "gryphon",
+      "jovius",
+      "mask",
+      "totalAwards"
+    ],
+    masterhoodTypes: [
+      "Battle",
+      "Warrior",
+      "Crown",
+      "Dragon",
+      "Garber",
+      "Owl",
+      "Rose",
+      "Smith",
+      "Lion",
+      "Gryphon",
+      "Jovius",
+      "Mask"
+    ],
+    paragonClasses: [
+      "Anti-Paladin",
+      "Archer",
+      "Assassin",
+      "Barbarian",
+      "Bard",
+      "Druid",
+      "Healer",
+      "Monk",
+      "Paladin",
+      "Scout",
+      "Warrior",
+      "Wizard"
+    ]
+  };
+}
+
+function queueEbonmarchRefresh_(params) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheetByName(getEbonmarchPlayerIdsSheetName_());
+
+  if (!sheet) {
+    return {
+      ok: false,
+      queued: false,
+      message: "Missing sheet: " + getEbonmarchPlayerIdsSheetName_()
+    };
+  }
+
+  const values = sheet.getDataRange().getValues();
+  if (values.length < 1) {
+    return {
+      ok: false,
+      queued: false,
+      message: "Player ID sheet has no header row."
+    };
+  }
+
+  const h = headerMap_(values[0]);
+  const requiredHeaders = [
+    "Player ID",
+    "Player",
+    "Park",
+    "Park ID",
+    "Status",
+    "Last Attempt",
+    "Last Success",
+    "Attempts",
+    "Error"
+  ];
+
+  const missing = requiredHeaders.filter(header => !Object.prototype.hasOwnProperty.call(h, header));
+  if (missing.length) {
+    return {
+      ok: false,
+      queued: false,
+      message: "Missing required header(s): " + missing.join(", ")
+    };
+  }
+
+  const playerId = String(params.playerId || params.id || "").trim();
+  const playerName = String(params.playerName || params.name || "").trim();
+  const park = String(params.park || "").trim();
+  const kingdom = String(params.kingdom || "").trim();
+  const reason = String(params.reason || "refresh-request").trim();
+
+  if (!playerId && !playerName) {
+    return {
+      ok: false,
+      queued: false,
+      message: "Missing player ID or player name."
+    };
+  }
+
+  const existingRowIndex = findPlayerQueueRow_(values, h, playerId, playerName);
+
+  if (existingRowIndex > 0) {
+    const rowNumber = existingRowIndex + 1;
+    const oldAttempts = Number(getQueueCell_(values[existingRowIndex], h, "Attempts") || 0);
+
+    setSheetCellByHeader_(sheet, rowNumber, h, "Status", "Needs Refresh");
+    setSheetCellByHeader_(sheet, rowNumber, h, "Last Attempt", "");
+    setSheetCellByHeader_(sheet, rowNumber, h, "Error", reason);
+    setSheetCellByHeader_(sheet, rowNumber, h, "Attempts", oldAttempts || 0);
+
+    if (park) setSheetCellByHeader_(sheet, rowNumber, h, "Park", park);
+    if (park && !getQueueCell_(values[existingRowIndex], h, "Park ID")) {
+      setSheetCellByHeader_(sheet, rowNumber, h, "Park ID", getEbonmarchParkId_(park));
     }
 
-    function renderGlobalResults(players) {
-      if (!players.length) {
-        els.globalResults.innerHTML = `<p class="note">No players found.</p>`;
-        return;
-      }
+    return {
+      ok: true,
+      queued: true,
+      updatedExisting: true,
+      message: "Existing player marked Needs Refresh.",
+      playerId: playerId || getQueueCell_(values[existingRowIndex], h, "Player ID"),
+      playerName: playerName || getQueueCell_(values[existingRowIndex], h, "Player")
+    };
+  }
 
-      const fragment = document.createDocumentFragment();
+  const newRow = new Array(sheet.getLastColumn()).fill("");
 
-      players.forEach(player => {
-        const card = document.createElement("button");
-        card.type = "button";
-        card.className = "player-card";
-        card.innerHTML = `
-          <span class="player-name">${escapeHtml(player.name)}</span>
-          <span class="player-meta">${escapeHtml([player.park, player.kingdom].filter(Boolean).join(" · "))}</span>
-        `;
-        card.addEventListener("click", () => {
-          const cacheLikePlayer = {
-            name: player.name,
-            mundaneId: player.mundaneId,
-            park: player.park,
-            kingdom: player.kingdom,
-            active: "ORK Search Result",
-            raw: player.raw
-          };
-          showView("roster");
-          selectPlayer(cacheLikePlayer);
-          queueRefresh(cacheLikePlayer, "global-search-selected");
-        });
-        fragment.appendChild(card);
-      });
+  setQueueCell_(newRow, h, "Player ID", playerId);
+  setQueueCell_(newRow, h, "Player", playerName);
+  setQueueCell_(newRow, h, "Park", park);
+  setQueueCell_(newRow, h, "Park ID", getEbonmarchParkId_(park));
+  setQueueCell_(newRow, h, "Status", "Needs Refresh");
+  setQueueCell_(newRow, h, "Last Attempt", "");
+  setQueueCell_(newRow, h, "Last Success", "");
+  setQueueCell_(newRow, h, "Attempts", 0);
+  setQueueCell_(newRow, h, "Error", reason + (kingdom ? " | " + kingdom : ""));
 
-      els.globalResults.innerHTML = "";
-      els.globalResults.appendChild(fragment);
+  sheet.appendRow(newRow);
+
+  return {
+    ok: true,
+    queued: true,
+    updatedExisting: false,
+    message: "New player added and marked Needs Refresh.",
+    playerId,
+    playerName
+  };
+}
+
+function processEbonmarchRefreshQueue() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheetByName(getEbonmarchPlayerIdsSheetName_());
+
+  if (!sheet) {
+    return {
+      ok: false,
+      processed: 0,
+      message: "Missing sheet: " + getEbonmarchPlayerIdsSheetName_()
+    };
+  }
+
+  const values = sheet.getDataRange().getValues();
+  if (values.length < 2) {
+    return {
+      ok: true,
+      processed: 0,
+      message: "No rows to process."
+    };
+  }
+
+  const h = headerMap_(values[0]);
+  let processed = 0;
+
+  for (let i = 1; i < values.length; i++) {
+    const status = getQueueCell_(values[i], h, "Status");
+
+    if (status !== "Queued") continue;
+
+    setSheetCellByHeader_(sheet, i + 1, h, "Status", "Needs Refresh");
+    setSheetCellByHeader_(sheet, i + 1, h, "Error", "Marked Needs Refresh by monthly queue processor.");
+    processed++;
+  }
+
+  return {
+    ok: true,
+    processed,
+    message: "Queued rows marked Needs Refresh."
+  };
+}
+
+function installEbonmarchMonthlyRefreshTrigger() {
+  ScriptApp.getProjectTriggers().forEach(trigger => {
+    if (trigger.getHandlerFunction() === "processEbonmarchRefreshQueue") {
+      ScriptApp.deleteTrigger(trigger);
     }
+  });
 
-    function showView(id) {
-      document.querySelectorAll(".view").forEach(view => view.classList.remove("active"));
-      document.getElementById(id).classList.add("active");
+  ScriptApp.newTrigger("processEbonmarchRefreshQueue")
+    .timeBased()
+    .onMonthDay(15)
+    .atHour(0)
+    .create();
+}
 
-      document.querySelectorAll(".tab-btn").forEach(btn => {
-        btn.classList.toggle("active", btn.dataset.view === id);
-      });
+function findPlayerQueueRow_(values, h, playerId, playerName) {
+  const idLower = String(playerId || "").trim().toLowerCase();
+  const nameLower = String(playerName || "").trim().toLowerCase();
+
+  for (let i = 1; i < values.length; i++) {
+    const rowId = getQueueCell_(values[i], h, "Player ID").toLowerCase();
+    const rowName = getQueueCell_(values[i], h, "Player").toLowerCase();
+
+    if (idLower && rowId === idLower) return i;
+    if (nameLower && rowName === nameLower) return i;
+  }
+
+  return -1;
+}
+
+function getEbonmarchParkId_(parkName) {
+  const parks = {
+    "the mire": 655,
+    "grim garrison": 714,
+    "direwolf's rest": 797,
+    "direwolfs rest": 797,
+    "five oaks": 146,
+    "kirin grove": 865,
+    "ebonmarch": 822,
+    "storm bridge": 161
+  };
+
+  return parks[String(parkName || "").trim().toLowerCase()] || "";
+}
+
+function getEbonmarchDashboardSheetName_() {
+  try {
+    if (typeof EBONMARCH !== "undefined" && EBONMARCH.SHEETS && EBONMARCH.SHEETS.DASHBOARD) {
+      return EBONMARCH.SHEETS.DASHBOARD;
     }
+  } catch (err) {}
 
-    function playerKey(player) {
-      return String(player.mundaneId || player.name).toLowerCase();
+  return "Ebonmarch Awards Summary";
+}
+
+function getEbonmarchPlayerIdsSheetName_() {
+  try {
+    if (typeof EBONMARCH !== "undefined" && EBONMARCH.SHEETS && EBONMARCH.SHEETS.PLAYER_IDS) {
+      return EBONMARCH.SHEETS.PLAYER_IDS;
     }
+  } catch (err) {}
 
-    function labelAward(key) {
-      const labels = {
-        battle: "Battle",
-        warrior: "Warrior",
-        crown: "Crown",
-        dragon: "Dragon",
-        garber: "Garber",
-        owl: "Owl",
-        rose: "Rose",
-        smith: "Smith",
-        lion: "Lion",
-        gryphon: "Gryphon",
-        jovius: "Jovius",
-        mask: "Mask",
-        totalAwards: "Total Awards"
-      };
+  return "Ebonmarch Player IDs";
+}
 
-      return labels[key] || key;
-    }
+function getQueueCell_(row, h, header) {
+  if (!Object.prototype.hasOwnProperty.call(h, header)) return "";
+  return String(row[h[header]] || "").trim();
+}
 
-    function hideSplash() {
-      const splash = document.getElementById("splashScreen");
-      if (!splash) return;
+function setQueueCell_(row, h, header, value) {
+  if (!Object.prototype.hasOwnProperty.call(h, header)) return;
+  row[h[header]] = value;
+}
 
-      splash.classList.add("fade");
+function setSheetCellByHeader_(sheet, rowNumber, h, header, value) {
+  if (!Object.prototype.hasOwnProperty.call(h, header)) return;
+  sheet.getRange(rowNumber, h[header] + 1).setValue(value);
+}
 
-      setTimeout(() => {
-        splash.remove();
-      }, 1400);
-    }
+function getRawByHeader_(row, h, header) {
+  if (!Object.prototype.hasOwnProperty.call(h, header)) return "";
+  return row[h[header]];
+}
 
-    function setStatus(type, text) {
-      els.statusDot.className = "dot" + (type === "ready" ? " ready" : type === "error" ? " error" : "");
-      els.statusText.textContent = text;
-    }
+function getByHeader_(row, h, header) {
+  if (!Object.prototype.hasOwnProperty.call(h, header)) return "";
+  return String(row[h[header]] || "").trim();
+}
 
-    function jsonp(url, params = {}) {
-      return new Promise((resolve, reject) => {
-        const callbackName = "ebonmarchJsonp_" + Date.now() + "_" + Math.random().toString(36).slice(2);
-        const query = new URLSearchParams({ ...params, callback: callbackName });
-        const script = document.createElement("script");
-        let timeoutId;
+function splitDashboardList_(value) {
+  if (!value) return [];
 
-        window[callbackName] = data => {
-          clearTimeout(timeoutId);
-          delete window[callbackName];
-          script.remove();
-          resolve(data);
-        };
+  return String(value)
+    .split(/[,|;]/)
+    .map(s => s.trim())
+    .filter(Boolean);
+}
 
-        script.onerror = () => {
-          clearTimeout(timeoutId);
-          delete window[callbackName];
-          script.remove();
-          reject(new Error("JSONP failed"));
-        };
+function hasMasterhoodForAward_(masterhoods, key) {
+  const awardName = labelAward_(key).toLowerCase();
 
-        timeoutId = setTimeout(() => {
-          delete window[callbackName];
-          script.remove();
-          reject(new Error("JSONP timed out"));
-        }, 30000);
+  return masterhoods
+    .map(m => String(m).toLowerCase())
+    .some(m => m === awardName || m.includes(awardName));
+}
 
-        script.src = url + "?" + query.toString();
-        document.body.appendChild(script);
-      });
-    }
+function adjustedTotalAwards_(row) {
+  const meta = getEbonmarchDashboardMeta();
+  let total = 0;
+  const masterhoods = splitDashboardList_(row.masterhoods);
 
-    function withTimeout(promise, ms) {
-      return Promise.race([
-        promise,
-        new Promise(resolve => {
-          setTimeout(() => resolve([]), ms);
-        })
-      ]);
-    }
+  meta.awardOptions.forEach(key => {
+    if (key === "totalAwards") return;
 
-    function formatUpdated(value) {
-      if (!value) return new Date().toLocaleDateString();
-      const date = new Date(value);
-      if (isNaN(date)) return String(value);
-      return date.toLocaleDateString();
-    }
+    const base = Number(row[key] || 0);
+    const hasMasterhood = hasMasterhoodForAward_(masterhoods, key);
 
-    function debounce(fn, delay) {
-      let timeout;
-      return (...args) => {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => fn(...args), delay);
-      };
-    }
+    total += hasMasterhood ? Math.max(base, 10) : base;
+  });
 
-    function escapeHtml(value) {
-      return String(value ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
-  </script>
-</body>
-</html>
+  return Math.max(Number(row.totalAwards || 0), total);
+}
+
+function labelAward_(key) {
+  const labels = {
+    battle: "Battle",
+    warrior: "Warrior",
+    crown: "Crown",
+    dragon: "Dragon",
+    garber: "Garber",
+    owl: "Owl",
+    rose: "Rose",
+    smith: "Smith",
+    lion: "Lion",
+    gryphon: "Gryphon",
+    jovius: "Jovius",
+    mask: "Mask",
+    totalAwards: "Total Awards"
+  };
+
+  return labels[key] || key;
+}
+
+function formatDateForDashboard_(value) {
+  if (!value) return "";
+
+  if (Object.prototype.toString.call(value) === "[object Date]" && !isNaN(value)) {
+    return Utilities.formatDate(
+      value,
+      Session.getScriptTimeZone(),
+      "yyyy-MM-dd"
+    );
+  }
+
+  return String(value).trim();
+}
+
+function headerMap_(headers) {
+  const map = {};
+
+  headers.forEach((header, index) => {
+    map[String(header || "").trim()] = index;
+  });
+
+  return map;
+}
+
+function decodeHtml_(value) {
+  if (!value) return "";
+
+  return String(value)
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#039;/g, "'")
+    .replace(/&apos;/g, "'");
+}
