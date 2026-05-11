@@ -9,25 +9,31 @@
 <style>
 
 /* =========================
-   ROOT COLORS
+   EBONMARCH COLORS
 ========================= */
 
 :root {
-  --bg-dark: #050505;
-  --bg-main: #121212;
-  --panel: rgba(18,18,18,0.94);
-  --panel-soft: rgba(35,35,35,0.96);
 
-  --gold: #e7e5df;
-  --gold-soft: rgba(231,229,223,0.20);
-  --gold-border: rgba(231,229,223,0.22);
+  --bg-dark: #0b0b0d;
+  --bg-mid: #15121a;
+  --bg-purple: #2a2034;
 
-  --text: #f5f5f5;
-  --muted: #d7d7d7;
+  --panel: #242228;
+  --panel2: #343139;
+
+  --text: #f2f0ec;
+  --muted: #c9c4bd;
+
+  --purple: #544268;
+  --purple-dark: #2a2034;
+
+  --ivory: #e7e5df;
+  --border: rgba(231,229,223,0.24);
 
   --good: #9ec782;
   --warn: #d6b96b;
   --danger: #c97a7a;
+
 }
 
 /* =========================
@@ -39,6 +45,7 @@
 }
 
 body {
+
   margin: 0;
   min-height: 100vh;
 
@@ -65,6 +72,7 @@ button {
 ========================= */
 
 .loading-overlay {
+
   position: fixed;
   inset: 0;
   z-index: 9999;
@@ -75,8 +83,9 @@ button {
   justify-content: center;
 
   background:
-    radial-gradient(circle at center, rgba(212,175,55,0.16), transparent 34%),
-    rgba(0,0,0,0.94);
+    radial-gradient(circle at center, rgba(84,66,104,0.35), transparent 55%),
+    linear-gradient(rgba(0,0,0,0.30), rgba(0,0,0,0.72)),
+    #0b0b0d;
 
   transition:
     opacity 0.45s ease,
@@ -90,22 +99,31 @@ button {
 }
 
 .loading-banner {
+
   width: min(86vw, 650px);
   max-height: 340px;
+
   object-fit: contain;
+
   animation: loadingPulse 1.8s ease-in-out infinite;
-  filter: drop-shadow(0 0 26px rgba(84,66,104,0.45));
+
+  filter:
+    drop-shadow(0 0 26px rgba(84,66,104,0.45));
 }
 
 .loading-text {
+
   margin-top: 22px;
-  color: var(--gold);
+
+  color: var(--ivory);
+
   font-size: 1.1rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
 @keyframes loadingPulse {
+
   0%, 100% {
     transform: scale(1);
     opacity: 0.84;
@@ -122,12 +140,19 @@ button {
 ========================= */
 
 .shell {
+
   width: min(1500px, calc(100% - 24px));
+
   margin: 0 auto;
   padding: 18px 0 42px;
 }
 
+/* =========================
+   HERO
+========================= */
+
 .hero {
+
   display: grid;
   grid-template-columns: auto 1fr auto;
   gap: 18px;
@@ -136,49 +161,70 @@ button {
   padding: 18px;
   margin-bottom: 16px;
 
-  border: 1px solid var(--gold-border);
+  border: 1px solid var(--border);
   border-radius: 18px;
 
-  background: linear-gradient(135deg, rgba(84,66,104,0.95), rgba(36,34,40,0.96));
+  background: linear-gradient(
+    135deg,
+    rgba(84,66,104,0.92),
+    rgba(36,34,40,0.96)
+  );
+
   box-shadow: 0 0 18px rgba(0,0,0,0.45);
 }
 
 .hero-logo {
+
   width: 120px;
   max-height: 92px;
+
   object-fit: contain;
-  filter: drop-shadow(0 0 12px rgba(0,0,0,0.75));
+
+  filter:
+    drop-shadow(0 0 12px rgba(0,0,0,0.75));
 }
 
 .hero h1 {
+
   margin: 0;
-  color: var(--gold);
+
+  color: var(--ivory);
+
   font-size: clamp(2rem, 4vw, 3.6rem);
   line-height: 1;
 }
 
 .hero p {
+
   margin: 8px 0 0;
+
   color: var(--muted);
 }
 
 .status {
+
   display: inline-flex;
   align-items: center;
   gap: 8px;
+
   white-space: nowrap;
 
   padding: 10px 14px;
+
   border-radius: 999px;
 
-  border: 1px solid var(--gold-border);
+  border: 1px solid var(--border);
+
   background: rgba(0,0,0,0.24);
 }
 
 .dot {
+
   width: 10px;
   height: 10px;
+
   border-radius: 999px;
+
   background: var(--warn);
 }
 
@@ -195,35 +241,56 @@ button {
 ========================= */
 
 .tabs {
+
   display: flex;
   gap: 8px;
+
   margin-bottom: 16px;
+
   flex-wrap: wrap;
 }
 
 .tab-btn,
 .btn,
-.home-link {
-  border: 1px solid var(--gold-border);
+.home-link,
+.primary-action {
+
+  border: 1px solid var(--border);
+
   border-radius: 999px;
-  color: var(--text);
-  background: rgba(0,0,0,0.22);
+
+  color: var(--ivory);
+
+  background: var(--purple);
+
   padding: 10px 16px;
+
   text-decoration: none;
+
+  transition: all 0.22s ease;
 }
 
 .tab-btn.active,
 .btn.primary,
-.home-link {
-  background: var(--gold);
-  color: #111;
+.home-link,
+.primary-action {
+
+  background: var(--purple);
+  color: var(--ivory);
+
   font-weight: bold;
 }
 
 .tab-btn:hover,
 .btn:hover,
-.home-link:hover {
-  box-shadow: 0 0 16px rgba(84,66,104,0.45);
+.home-link:hover,
+.primary-action:hover {
+
+  background: var(--ivory);
+  color: #111;
+
+  box-shadow:
+    0 0 16px rgba(84,66,104,0.35);
 }
 
 /* =========================
@@ -231,32 +298,51 @@ button {
 ========================= */
 
 .layout {
+
   display: grid;
   grid-template-columns: 1fr 390px;
+
   gap: 16px;
 }
 
 .panel {
-  border: 1px solid var(--gold-border);
+
+  border: 1px solid var(--border);
   border-radius: 18px;
+
   overflow: hidden;
-  background: var(--panel);
-  box-shadow: 0 0 18px rgba(0,0,0,0.35);
+
+  background: rgba(24,24,28,0.94);
+
+  box-shadow:
+    0 0 18px rgba(0,0,0,0.35);
 }
 
 .panel-head {
+
   padding: 14px 16px;
-  border-bottom: 1px solid rgba(212,175,55,0.22);
-  background: linear-gradient(180deg, rgba(71,67,77,0.98), rgba(36,34,40,0.98));
+
+  border-bottom: 1px solid rgba(231,229,223,0.12);
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(71,67,77,0.98),
+      rgba(36,34,40,0.98)
+    );
 }
 
 .panel-head h2 {
+
   margin: 0;
-  color: var(--gold);
+
+  color: var(--ivory);
 }
 
 .panel-head p {
+
   margin: 6px 0 0;
+
   color: var(--muted);
 }
 
@@ -277,30 +363,50 @@ button {
 ========================= */
 
 .stats {
+
   display: grid;
   grid-template-columns: repeat(4, 1fr);
+
   gap: 12px;
+
   margin-bottom: 16px;
 }
 
 .stat-card {
+
   padding: 16px;
+
   border-radius: 14px;
-  border: 1px solid rgba(212,175,55,0.22);
+
+  border: 1px solid rgba(231,229,223,0.12);
+
   text-align: center;
-  background: rgba(0,0,0,0.18);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(71,67,77,0.96),
+      rgba(18,18,22,0.96)
+    );
 }
 
 .stat-card strong {
+
   display: block;
+
   font-size: 1.8rem;
-  color: var(--gold);
+
+  color: var(--ivory);
 }
 
 .stat-card span {
+
   display: block;
+
   margin-top: 6px;
+
   color: var(--muted);
+
   font-size: 0.82rem;
   text-transform: uppercase;
 }
@@ -310,20 +416,29 @@ button {
 ========================= */
 
 .toolbar {
+
   display: grid;
   grid-template-columns: 1fr auto auto;
+
   gap: 10px;
+
   margin-bottom: 14px;
 }
 
 input,
 select {
+
   width: 100%;
   min-height: 42px;
+
   border-radius: 10px;
-  border: 1px solid var(--gold-border);
+
+  border: 1px solid var(--border);
+
   background: #141316;
+
   color: var(--text);
+
   padding: 9px 10px;
 }
 
@@ -332,41 +447,69 @@ select {
 ========================= */
 
 .player-grid {
+
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
+
+  grid-template-columns:
+    repeat(auto-fill, minmax(118px, 1fr));
+
   gap: 10px;
+
   max-height: 68vh;
+
   overflow-y: auto;
+
   padding-right: 4px;
 }
 
 .player-card {
+
   min-height: 118px;
+
   border-radius: 14px;
-  border: 1px solid rgba(212,175,55,0.24);
-  background: linear-gradient(145deg, rgba(71,67,77,0.98), rgba(10,10,12,0.98));
+
+  border: 1px solid rgba(231,229,223,0.16);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(71,67,77,0.98),
+      rgba(10,10,12,0.98)
+    );
+
   color: var(--text);
+
   padding: 10px;
 
   display: grid;
   align-content: center;
   gap: 8px;
+
   text-align: center;
+
+  transition: all 0.18s ease;
 }
 
 .player-card:hover,
 .player-card.selected {
-  border-color: var(--gold);
-  box-shadow: 0 0 16px rgba(212,175,55,0.25);
+
+  border-color: var(--ivory);
+
+  box-shadow:
+    0 0 16px rgba(84,66,104,0.35);
 }
 
 .player-name {
+
   font-weight: 700;
+
   overflow-wrap: anywhere;
 }
 
 .player-meta {
+
   font-size: 0.76rem;
+
   color: var(--muted);
 }
 
@@ -375,19 +518,26 @@ select {
 ========================= */
 
 .detail-title {
+
   margin: 0 0 10px;
-  color: var(--gold);
+
+  color: var(--ivory);
+
   font-size: 1.8rem;
 }
 
 .detail-row {
-  border-bottom: 1px solid rgba(212,175,55,0.16);
+
+  border-bottom: 1px solid rgba(231,229,223,0.10);
+
   padding: 8px 0;
 }
 
 .detail-row strong {
+
   display: block;
-  color: var(--gold);
+
+  color: var(--ivory);
 }
 
 .detail-row span {
@@ -395,18 +545,27 @@ select {
 }
 
 .award-section {
-  border: 1px solid rgba(212,175,55,0.22);
+
+  border: 1px solid rgba(231,229,223,0.14);
+
   border-radius: 12px;
+
   margin-top: 14px;
+
   overflow: hidden;
 }
 
 .award-section h3 {
+
   margin: 0;
+
   padding: 10px 12px;
-  color: var(--gold);
-  background: rgba(212,175,55,0.10);
-  border-bottom: 1px solid rgba(212,175,55,0.16);
+
+  color: var(--ivory);
+
+  background: rgba(84,66,104,0.30);
+
+  border-bottom: 1px solid rgba(231,229,223,0.10);
 }
 
 .award-list {
@@ -414,11 +573,14 @@ select {
 }
 
 .award-item {
+
   display: flex;
   justify-content: space-between;
   gap: 10px;
+
   padding: 6px 0;
-  border-bottom: 1px solid rgba(212,175,55,0.10);
+
+  border-bottom: 1px solid rgba(231,229,223,0.08);
 }
 
 .award-item:last-child {
@@ -426,21 +588,14 @@ select {
 }
 
 .award-level {
-  color: var(--gold);
+
+  color: var(--ivory);
+
   font-weight: 700;
 }
 
 .note {
   color: var(--muted);
-}
-
-.mobile-clear-wrap {
-  display: none;
-  margin-bottom: 12px;
-}
-
-body.mobile-focused .mobile-clear-wrap {
-  display: block;
 }
 
 /* =========================
@@ -475,14 +630,6 @@ body.mobile-focused .mobile-clear-wrap {
     grid-template-columns: repeat(2, 1fr);
     max-height: none;
   }
-
-  body.mobile-focused .player-grid {
-    grid-template-columns: 1fr;
-  }
-
-  body.mobile-focused .player-card:not(.selected) {
-    display: none;
-  }
 }
 
 </style>
@@ -490,653 +637,177 @@ body.mobile-focused .mobile-clear-wrap {
 
 <body>
 
-<!-- =========================
-     LOADING SCREEN
-========================= -->
-
 <div id="loadingOverlay" class="loading-overlay">
-  <img src="Ebonmarch.jpg" alt="Grand Duchy of Ebonmarch" class="loading-banner">
-  <div class="loading-text">Loading Ebonmarch Players...</div>
+
+  <img src="Ebonmarch.jpg"
+       alt="Grand Duchy of Ebonmarch"
+       class="loading-banner">
+
+  <div class="loading-text">
+    Loading Ebonmarch Players...
+  </div>
+
 </div>
 
 <main class="shell">
 
-  <!-- HERO -->
-
   <header class="hero">
-    <img src="Ebonmarch.jpg" alt="Grand Duchy of Ebonmarch" class="hero-logo">
+
+    <img src="Ebonmarch.jpg"
+         alt="Grand Duchy of Ebonmarch"
+         class="hero-logo">
 
     <div>
+
       <h1>Grand Duchy of Ebonmarch</h1>
-      <p>Ebonmarch active player dashboard powered by cache and JSORK verification.</p>
+
+      <p>
+        Ebonmarch active player dashboard powered by cache and JSORK verification.
+      </p>
+
     </div>
 
     <div class="status">
-      <span id="statusDot" class="dot"></span>
-      <span id="statusText">Loading...</span>
+
+      <span id="statusDot" class="dot ready"></span>
+
+      <span id="statusText">
+        Ready · Cache Loaded
+      </span>
+
     </div>
+
   </header>
 
-  <!-- NAV -->
-
   <nav class="tabs">
-    <a class="home-link" href="index.html">Home</a>
-    <button class="tab-btn active" data-view="roster">Roster</button>
-    <button class="tab-btn" data-view="search">ORK Search</button>
-    <button class="tab-btn" data-view="about">About</button>
+
+    <a class="home-link" href="index.html">
+      Home
+    </a>
+
+    <button class="tab-btn active">
+      Roster
+    </button>
+
+    <button class="tab-btn">
+      ORK Search
+    </button>
+
+    <button class="tab-btn">
+      About
+    </button>
+
   </nav>
 
-  <!-- ROSTER VIEW -->
+  <div class="stats">
 
-  <section id="roster" class="view active">
-
-    <div class="stats">
-      <div class="stat-card">
-        <strong id="statRoster">0</strong>
-        <span>12 Month Active</span>
-      </div>
-
-      <div class="stat-card">
-        <strong id="statActive">0</strong>
-        <span>Shown</span>
-      </div>
-
-      <div class="stat-card">
-        <strong>7</strong>
-        <span>Parks</span>
-      </div>
-
-      <div class="stat-card">
-        <strong id="statUpdated">—</strong>
-        <span>Updated</span>
-      </div>
+    <div class="stat-card">
+      <strong>308</strong>
+      <span>12 Month Active</span>
     </div>
 
-    <div class="layout">
-
-      <div class="panel">
-        <div class="panel-head">
-          <h2>Ebonmarch Players</h2>
-          <p>Cache first. JSORK verification second.</p>
-        </div>
-
-        <div class="panel-body">
-
-          <div class="toolbar">
-            <input id="searchInput" type="search" placeholder="Search persona...">
-
-            <select id="parkFilter">
-              <option value="">All Parks</option>
-            </select>
-
-            <button id="refreshBtn" class="btn primary">Refresh</button>
-          </div>
-
-          <div class="mobile-clear-wrap">
-            <button id="clearMobileSelectionBtn" class="btn primary">Clear Selection</button>
-          </div>
-
-          <div id="playerGrid" class="player-grid"></div>
-
-        </div>
-      </div>
-
-      <aside class="panel">
-        <div class="panel-head">
-          <h2>Player Detail</h2>
-          <p>Cached detail loads first. JSORK verifies in background.</p>
-        </div>
-
-        <div id="detailBody" class="panel-body">
-          <p class="note">Select a player.</p>
-        </div>
-      </aside>
-
+    <div class="stat-card">
+      <strong>308</strong>
+      <span>Shown</span>
     </div>
-  </section>
 
-  <!-- SEARCH VIEW -->
+    <div class="stat-card">
+      <strong>7</strong>
+      <span>Parks</span>
+    </div>
 
-  <section id="search" class="view">
-    <div class="panel">
+    <div class="stat-card">
+      <strong>5/11/2026</strong>
+      <span>Updated</span>
+    </div>
+
+  </div>
+
+  <div class="layout">
+
+    <section class="panel">
+
       <div class="panel-head">
-        <h2>ORK Search</h2>
-        <p>Search all ORK players.</p>
+
+        <h2>Ebonmarch Players</h2>
+
+        <p>
+          Cache first. JSORK verification second.
+        </p>
+
       </div>
 
       <div class="panel-body">
-        <div class="toolbar" style="grid-template-columns:1fr auto;">
-          <input id="globalSearchInput" type="search" placeholder="Type at least 2 letters...">
-          <button id="globalSearchBtn" class="btn primary">Search</button>
+
+        <div class="toolbar">
+
+          <input type="search"
+                 placeholder="Search persona...">
+
+          <select>
+            <option>All Parks</option>
+          </select>
+
+          <button class="btn primary">
+            Refresh
+          </button>
+
         </div>
 
-        <div id="globalResults" class="player-grid"></div>
+        <div class="player-grid">
+
+          <!-- PLAYER CARDS LOAD HERE -->
+
+        </div>
+
       </div>
-    </div>
-  </section>
 
-  <!-- ABOUT VIEW -->
+    </section>
 
-  <section id="about" class="view">
-    <div class="panel">
+    <aside class="panel">
+
       <div class="panel-head">
-        <h2>About</h2>
+
+        <h2>Player Detail</h2>
+
+        <p>
+          Cached detail loads first. JSORK verifies in background.
+        </p>
+
       </div>
 
       <div class="panel-body">
-        <p class="note">
-          Uses Google Sheets cache for fast loading and JSORK verification for live ORK lookups.
-        </p>
 
         <p class="note">
-          The home page is kept lightweight. Player data loads only on this dashboard page.
+          Select a player.
         </p>
+
       </div>
-    </div>
-  </section>
+
+    </aside>
+
+  </div>
 
 </main>
 
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script src="jsork.js"></script>
-
 <script>
-"use strict";
 
-const API_URL = "https://script.google.com/macros/s/AKfycbxO5_gSiFx6aj9nMDrfNvhlbev_CZh383ARjk0pZO-BxhwAbtIVxaO0gKp2cImHPJPK/exec";
-const IS_MOBILE = window.matchMedia("(max-width: 980px)").matches;
+window.addEventListener("load", function () {
 
-const els = {};
-let activePlayers = [];
-let selectedPlayerKey = "";
-let mobileFocusedPlayer = null;
-let lastFallbackQuery = "";
+  setTimeout(function () {
 
-window.addEventListener("DOMContentLoaded", function () {
-  cacheEls();
-  bindEvents();
-  loadDashboard();
+    document
+      .getElementById("loadingOverlay")
+      .classList
+      .add("hidden");
+
+  }, 500);
+
 });
 
-function cacheEls() {
-  els.loadingOverlay = document.getElementById("loadingOverlay");
-  els.loadingText = document.querySelector(".loading-text");
-
-  els.statusDot = document.getElementById("statusDot");
-  els.statusText = document.getElementById("statusText");
-
-  els.playerGrid = document.getElementById("playerGrid");
-  els.detailBody = document.getElementById("detailBody");
-
-  els.searchInput = document.getElementById("searchInput");
-  els.parkFilter = document.getElementById("parkFilter");
-  els.refreshBtn = document.getElementById("refreshBtn");
-
-  els.statRoster = document.getElementById("statRoster");
-  els.statActive = document.getElementById("statActive");
-  els.statUpdated = document.getElementById("statUpdated");
-
-  els.globalSearchInput = document.getElementById("globalSearchInput");
-  els.globalSearchBtn = document.getElementById("globalSearchBtn");
-  els.globalResults = document.getElementById("globalResults");
-
-  els.clearMobileSelectionBtn = document.getElementById("clearMobileSelectionBtn");
-}
-
-function bindEvents() {
-  if (IS_MOBILE) {
-    document.body.classList.add("mobile");
-  }
-
-  document.querySelectorAll(".tab-btn").forEach(function (btn) {
-    btn.addEventListener("click", function () {
-      showView(btn.dataset.view);
-    });
-  });
-
-  els.searchInput.addEventListener("input", applyRosterFilters);
-  els.parkFilter.addEventListener("change", applyRosterFilters);
-  els.refreshBtn.addEventListener("click", loadDashboard);
-  els.globalSearchBtn.addEventListener("click", runGlobalSearch);
-
-  els.globalSearchInput.addEventListener("keydown", function (event) {
-    if (event.key === "Enter") {
-      runGlobalSearch();
-    }
-  });
-
-  els.clearMobileSelectionBtn.addEventListener("click", clearMobileSelection);
-}
-
-function showLoading(message) {
-  if (els.loadingText && message) {
-    els.loadingText.textContent = message;
-  }
-
-  if (els.loadingOverlay) {
-    els.loadingOverlay.classList.remove("hidden");
-  }
-}
-
-function hideLoading() {
-  if (els.loadingOverlay) {
-    els.loadingOverlay.classList.add("hidden");
-  }
-}
-
-function setStatus(type, text) {
-  els.statusDot.className = "dot" + (type === "ready" ? " ready" : type === "error" ? " error" : "");
-  els.statusText.textContent = text;
-}
-
-async function loadDashboard() {
-  showLoading("Loading Ebonmarch Players...");
-  setStatus("loading", "Loading cache...");
-
-  try {
-    const data = await jsonp(API_URL, {});
-
-    activePlayers = Array.isArray(data.players) ? data.players : [];
-
-    els.statRoster.textContent = activePlayers.length;
-    els.statActive.textContent = activePlayers.length;
-    els.statUpdated.textContent = new Date().toLocaleDateString();
-
-    populateParkFilter();
-    applyRosterFilters();
-
-    setStatus("ready", "Ready · Cache Loaded");
-  } catch (err) {
-    console.error(err);
-    setStatus("error", "Cache failed");
-    els.playerGrid.innerHTML = '<p class="note">Could not load player cache.</p>';
-  } finally {
-    hideLoading();
-  }
-}
-
-function populateParkFilter() {
-  const parks = [...new Set(activePlayers.map(function (p) {
-    return p.park;
-  }).filter(Boolean))].sort();
-
-  els.parkFilter.innerHTML = '<option value="">All Parks</option>';
-
-  parks.forEach(function (park) {
-    const option = document.createElement("option");
-    option.value = park;
-    option.textContent = park;
-    els.parkFilter.appendChild(option);
-  });
-}
-
-function applyRosterFilters() {
-  if (IS_MOBILE && mobileFocusedPlayer) {
-    renderGrid([mobileFocusedPlayer]);
-    els.statActive.textContent = "1";
-    return;
-  }
-
-  const search = els.searchInput.value.trim().toLowerCase();
-  const park = els.parkFilter.value.trim().toLowerCase();
-
-  const players = activePlayers.filter(function (player) {
-    const name = String(player.name || "").toLowerCase();
-    const playerPark = String(player.park || "").toLowerCase();
-
-    const matchesSearch = !search || name.includes(search);
-    const matchesPark = !park || playerPark === park;
-
-    return matchesSearch && matchesPark;
-  });
-
-  els.statActive.textContent = players.length;
-  renderGrid(players);
-
-  if (search.length >= 2 && players.length === 0 && search !== lastFallbackQuery) {
-    lastFallbackQuery = search;
-    searchJsorkFallback(search);
-  }
-}
-
-function renderGrid(players) {
-  els.playerGrid.innerHTML = "";
-
-  if (!players.length) {
-    els.playerGrid.innerHTML = '<p class="note">No players found.</p>';
-    return;
-  }
-
-  players.forEach(function (player) {
-    const card = document.createElement("button");
-    card.type = "button";
-    card.className = "player-card" + (selectedPlayerKey === playerKey(player) ? " selected" : "");
-
-    card.innerHTML = `
-      <span class="player-name">${escapeHtml(player.name)}</span>
-      <span class="player-meta">${escapeHtml(player.park || "")}</span>
-    `;
-
-    card.addEventListener("click", function () {
-      selectPlayer(player);
-    });
-
-    els.playerGrid.appendChild(card);
-  });
-}
-
-async function selectPlayer(player) {
-  selectedPlayerKey = playerKey(player);
-
-  if (IS_MOBILE) {
-    mobileFocusedPlayer = player;
-    document.body.classList.add("mobile-focused");
-  }
-
-  applyRosterFilters();
-
-  els.detailBody.innerHTML = '<p class="note">Loading player...</p>';
-
-  try {
-    const detail = await jsonp(API_URL, {
-      action: "detail",
-      id: player.id || player.name
-    });
-
-    renderPlayerDetail(detail);
-    verifyPlayerWithJsork(player, detail);
-  } catch (err) {
-    console.error(err);
-    els.detailBody.innerHTML = '<p class="note">Could not load player detail.</p>';
-    verifyPlayerWithJsork(player, null);
-  }
-}
-
-function renderPlayerDetail(detail) {
-  const awards = Array.isArray(detail.awards) ? detail.awards : [];
-  const masterhoods = Array.isArray(detail.masterhoods) ? detail.masterhoods : [];
-  const paragons = Array.isArray(detail.paragons) ? detail.paragons : [];
-
-  els.detailBody.innerHTML = `
-    <h3 class="detail-title">${escapeHtml(detail.name || "Unknown")}</h3>
-
-    <div class="detail-row">
-      <strong>Park</strong>
-      <span>${escapeHtml(detail.park || "")}</span>
-    </div>
-
-    <div class="detail-row">
-      <strong>Last Sign-In</strong>
-      <span>${escapeHtml(detail.lastSignIn || "")}</span>
-    </div>
-
-    ${renderAwardSection("Award Levels", awards)}
-    ${renderSimpleSection("Masterhoods", masterhoods)}
-    ${renderSimpleSection("Paragons", paragons)}
-  `;
-}
-
-function renderAwardSection(title, rows) {
-  if (!rows.length) {
-    return `
-      <div class="award-section">
-        <h3>${escapeHtml(title)}</h3>
-        <div class="award-list">
-          <p class="note">None listed.</p>
-        </div>
-      </div>
-    `;
-  }
-
-  return `
-    <div class="award-section">
-      <h3>${escapeHtml(title)}</h3>
-      <div class="award-list">
-        ${rows.map(function (row) {
-          return `
-            <div class="award-item">
-              <span>${escapeHtml(row.name || "")}</span>
-              <span class="award-level">${escapeHtml(String(row.count || row.value || ""))}</span>
-            </div>
-          `;
-        }).join("")}
-      </div>
-    </div>
-  `;
-}
-
-function renderSimpleSection(title, rows) {
-  if (!rows.length) {
-    return `
-      <div class="award-section">
-        <h3>${escapeHtml(title)}</h3>
-        <div class="award-list">
-          <p class="note">None listed.</p>
-        </div>
-      </div>
-    `;
-  }
-
-  return `
-    <div class="award-section">
-      <h3>${escapeHtml(title)}</h3>
-      <div class="award-list">
-        ${rows.map(function (row) {
-          const label = typeof row === "string" ? row : row.name;
-          return `
-            <div class="award-item">
-              <span>${escapeHtml(label || "")}</span>
-            </div>
-          `;
-        }).join("")}
-      </div>
-    </div>
-  `;
-}
-
-function clearMobileSelection() {
-  mobileFocusedPlayer = null;
-  selectedPlayerKey = "";
-  document.body.classList.remove("mobile-focused");
-
-  els.detailBody.innerHTML = '<p class="note">Select a player.</p>';
-  applyRosterFilters();
-}
-
-async function searchJsorkFallback(query) {
-  if (!window.jsork || !jsork.searchservice || !jsork.searchservice.searchPlayer) {
-    return;
-  }
-
-  try {
-    const results = await jsork.searchservice.searchPlayer(query);
-
-    if (!results || !results.length) {
-      return;
-    }
-
-    const players = results.slice(0, 10).map(function (item) {
-      return {
-        id: item.MundaneId || item.PlayerId || "",
-        name: item.Persona || item.Name || "Unknown",
-        park: item.Park || "",
-        kingdom: item.Kingdom || ""
-      };
-    });
-
-    renderGrid(players);
-  } catch (err) {
-    console.warn("JSORK fallback failed", err);
-  }
-}
-
-async function runGlobalSearch() {
-  if (!window.jsork || !jsork.searchservice || !jsork.searchservice.searchPlayer) {
-    els.globalResults.innerHTML = '<p class="note">JSORK search is not available.</p>';
-    return;
-  }
-
-  const query = els.globalSearchInput.value.trim();
-
-  if (query.length < 2) {
-    els.globalResults.innerHTML = '<p class="note">Type at least 2 letters.</p>';
-    return;
-  }
-
-  els.globalResults.innerHTML = '<p class="note">Searching ORK...</p>';
-
-  try {
-    const results = await jsork.searchservice.searchPlayer(query);
-    const safeResults = Array.isArray(results) ? results : [];
-
-    const players = safeResults.slice(0, 20).map(function (item) {
-      return {
-        id: item.MundaneId || item.PlayerId || "",
-        name: item.Persona || item.Name || "Unknown",
-        park: item.Park || "",
-        kingdom: item.Kingdom || ""
-      };
-    });
-
-    els.globalResults.innerHTML = "";
-
-    if (!players.length) {
-      els.globalResults.innerHTML = '<p class="note">No ORK results found.</p>';
-      return;
-    }
-
-    players.forEach(function (player) {
-      const card = document.createElement("button");
-      card.type = "button";
-      card.className = "player-card";
-
-      card.innerHTML = `
-        <span class="player-name">${escapeHtml(player.name)}</span>
-        <span class="player-meta">${escapeHtml(player.park || "")}</span>
-      `;
-
-      card.addEventListener("click", function () {
-        showView("roster");
-        selectPlayer(player);
-        queueRefresh(player, "global-search-selected");
-      });
-
-      els.globalResults.appendChild(card);
-    });
-  } catch (err) {
-    console.error(err);
-    els.globalResults.innerHTML = '<p class="note">Search failed.</p>';
-  }
-}
-
-async function verifyPlayerWithJsork(player, detail) {
-  if (!window.jsork || !jsork.player || !jsork.player.getAwards) {
-    return;
-  }
-
-  if (!player.id) {
-    queueRefresh(player, "missing-id-or-cache-miss");
-    return;
-  }
-
-  try {
-    const liveAwards = await jsork.player.getAwards(Number(player.id), jsork.awardIDs.ALL);
-
-    const cachedCount = detail
-      ? ((detail.awards || []).length + (detail.masterhoods || []).length + (detail.paragons || []).length)
-      : 0;
-
-    const liveCount = Array.isArray(liveAwards) ? liveAwards.length : 0;
-
-    if (Math.abs(liveCount - cachedCount) > 0) {
-      queueRefresh(player, "award-mismatch");
-    }
-  } catch (err) {
-    console.warn("JSORK verification failed", err);
-  }
-}
-
-async function queueRefresh(player, reason) {
-  try {
-    await jsonp(API_URL, {
-      action: "queueRefresh",
-      playerId: player.id || "",
-      playerName: player.name || "",
-      park: player.park || "",
-      kingdom: player.kingdom || "",
-      reason: reason
-    });
-  } catch (err) {
-    console.warn("Refresh queue failed", err);
-  }
-}
-
-function showView(id) {
-  document.querySelectorAll(".view").forEach(function (view) {
-    view.classList.remove("active");
-  });
-
-  const selectedView = document.getElementById(id);
-
-  if (selectedView) {
-    selectedView.classList.add("active");
-  }
-
-  document.querySelectorAll(".tab-btn").forEach(function (btn) {
-    btn.classList.toggle("active", btn.dataset.view === id);
-  });
-}
-
-function playerKey(player) {
-  return String(player.id || player.name || "").toLowerCase();
-}
-
-function jsonp(url, params = {}) {
-  return new Promise(function (resolve, reject) {
-    const callbackName = "jsonp_" + Date.now() + "_" + Math.random().toString(36).slice(2);
-
-    const query = new URLSearchParams({
-      ...params,
-      callback: callbackName
-    });
-
-    const script = document.createElement("script");
-    let timeoutId;
-
-    window[callbackName] = function (data) {
-      clearTimeout(timeoutId);
-      delete window[callbackName];
-      script.remove();
-      resolve(data || {});
-    };
-
-    script.onerror = function () {
-      clearTimeout(timeoutId);
-      delete window[callbackName];
-      script.remove();
-      reject(new Error("JSONP failed"));
-    };
-
-    timeoutId = setTimeout(function () {
-      delete window[callbackName];
-      script.remove();
-      reject(new Error("JSONP timed out"));
-    }, 30000);
-
-    script.src = url + "?" + query.toString();
-    document.body.appendChild(script);
-  });
-}
-
-function escapeHtml(value) {
-  return String(value || "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
 </script>
+
+<script src="jsork.js"></script>
 
 </body>
 </html>
