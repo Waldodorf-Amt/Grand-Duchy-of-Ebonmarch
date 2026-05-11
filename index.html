@@ -1,785 +1,456 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
 <title>Grand Duchy of Ebonmarch</title>
 
 <style>
-:root {
-  --bg: #0b0b0d;
-  --panel: #242228;
-  --panel2: #343139;
-  --text: #f2f0ec;
-  --muted: #c9c4bd;
-  --purple: #544268;
-  --gold: #e7e5df;
-  --border: rgba(231,229,223,0.24);
-  --good: #9ec782;
-  --warn: #d6b96b;
-  --danger: #c97a7a;
+
+/* =========================
+   GLOBAL
+========================= */
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top, rgba(160,120,45,0.22), transparent 35%),
+    linear-gradient(180deg, #121212 0%, #050505 100%);
+  color: #f5f5f5;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 * {
   box-sizing: border-box;
 }
 
-body {
-  margin: 0;
-  min-height: 100vh;
-  font-family: Georgia, serif;
-  color: var(--text);
-  background:
-    radial-gradient(circle at top left, rgba(84,66,104,0.55), transparent 34%),
-    linear-gradient(135deg, #050605 0%, #15121a 55%, #2a2034 100%);
-}
+/* =========================
+   MAIN LAYOUT
+========================= */
 
-button,
-input,
-select {
-  font: inherit;
-}
-
-.shell {
-  width: min(1500px, calc(100% - 24px));
+.home-shell {
+  width: 100%;
+  max-width: 1300px;
   margin: 0 auto;
-  padding: 18px 0 42px;
+  padding: 24px 16px 60px;
 }
 
-.hero {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 18px;
-  align-items: center;
-  padding: 20px;
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  background: linear-gradient(135deg, rgba(84,66,104,0.95), rgba(36,34,40,0.96));
-  margin-bottom: 16px;
-}
+/* =========================
+   HERO / BANNER
+========================= */
 
-.hero h1 {
-  margin: 0;
-  font-size: clamp(2rem, 4vw, 3.6rem);
-  line-height: 1;
-}
-
-.hero p {
-  margin: 8px 0 0;
-  color: var(--muted);
-}
-
-.status {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 14px;
-  border-radius: 999px;
-  border: 1px solid var(--border);
-  background: rgba(0,0,0,0.24);
-}
-
-.dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 999px;
-  background: var(--warn);
-}
-
-.dot.ready {
-  background: var(--good);
-}
-
-.dot.error {
-  background: var(--danger);
-}
-
-.tabs {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 16px;
-  flex-wrap: wrap;
-}
-
-.tab-btn,
-.btn {
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  color: var(--text);
-  background: rgba(0,0,0,0.22);
-  padding: 10px 16px;
-  cursor: pointer;
-}
-
-.tab-btn.active,
-.btn.primary {
-  background: rgba(84,66,104,0.95);
-}
-
-.layout {
-  display: grid;
-  grid-template-columns: 1fr 380px;
-  gap: 16px;
-}
-
-.panel {
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  overflow: hidden;
-  background: rgba(36,34,40,0.96);
-}
-
-.panel-head {
-  padding: 14px 16px;
-  border-bottom: 1px solid rgba(231,229,223,0.12);
-  background: linear-gradient(180deg, rgba(71,67,77,0.98), rgba(36,34,40,0.98));
-}
-
-.panel-head h2 {
-  margin: 0;
-}
-
-.panel-head p {
-  margin: 6px 0 0;
-  color: var(--muted);
-}
-
-.panel-body {
-  padding: 16px;
-}
-
-.stats {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-  margin-bottom: 16px;
-}
-
-.stat-card {
-  padding: 16px;
-  border-radius: 14px;
-  border: 1px solid rgba(231,229,223,0.12);
+.ebonmarch-hero {
   text-align: center;
-  background: rgba(0,0,0,0.18);
+  padding: 24px 12px 16px;
 }
 
-.stat-card strong {
-  display: block;
-  font-size: 1.8rem;
-  color: var(--gold);
+.hero-banner {
+  width: min(100%, 760px);
+  max-height: 280px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 18px rgba(0,0,0,0.75));
 }
 
-.stat-card span {
-  display: block;
-  margin-top: 6px;
-  color: var(--muted);
-  font-size: 0.82rem;
-  text-transform: uppercase;
+.ebonmarch-hero h1 {
+  margin: 18px 0 10px;
+  color: #d4af37;
+  font-size: clamp(2.2rem, 5vw, 4.2rem);
+  text-shadow: 0 0 14px rgba(0,0,0,0.7);
 }
 
-.toolbar {
+.hero-subtitle {
+  max-width: 760px;
+  margin: 0 auto;
+  color: #dddddd;
+  font-size: 1.08rem;
+  line-height: 1.5;
+}
+
+/* =========================
+   QUICK LINKS
+========================= */
+
+.quick-links-section {
+  width: 100%;
+  margin-top: 35px;
+  text-align: center;
+}
+
+.quick-links-section h2 {
+  color: #d4af37;
+  font-size: 2rem;
+  margin-bottom: 24px;
+  text-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+
+.quick-links-grid {
   display: grid;
-  grid-template-columns: 1fr auto auto;
-  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 22px;
+}
+
+.quick-link-card {
+  background: rgba(18,18,18,0.95);
+  border: 2px solid #d4af37;
+  border-radius: 18px;
+  padding: 24px;
+  text-decoration: none;
+  color: white;
+  transition: all 0.25s ease;
+  box-shadow: 0 0 14px rgba(0,0,0,0.4);
+}
+
+.quick-link-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  background: rgba(35,35,35,0.96);
+  box-shadow: 0 0 22px rgba(212,175,55,0.4);
+}
+
+.quick-link-icon {
+  font-size: 2.6rem;
   margin-bottom: 14px;
 }
 
-input,
-select {
-  width: 100%;
-  min-height: 42px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  background: #141316;
-  color: var(--text);
-  padding: 9px 10px;
+.quick-link-title {
+  font-size: 1.18rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #d4af37;
 }
 
-.player-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
-  gap: 10px;
-  max-height: 68vh;
-  overflow-y: auto;
+.quick-link-text {
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: #dddddd;
 }
 
-.player-card {
-  min-height: 118px;
-  border-radius: 14px;
-  border: 1px solid rgba(231,229,223,0.18);
-  background: linear-gradient(145deg, rgba(71,67,77,0.98), rgba(10,10,12,0.98));
-  color: var(--text);
-  padding: 10px;
-  cursor: pointer;
-  display: grid;
-  align-content: center;
-  gap: 8px;
+/* =========================
+   PLAYER BUTTON
+========================= */
+
+.players-gateway {
+  margin: 42px auto 0;
+  max-width: 760px;
   text-align: center;
+  background: rgba(15,15,15,0.92);
+  border: 1px solid rgba(212,175,55,0.55);
+  border-radius: 20px;
+  padding: 30px 22px;
+  box-shadow: 0 0 18px rgba(0,0,0,0.45);
 }
 
-.player-card:hover,
-.player-card.selected {
-  border-color: var(--gold);
+.players-gateway h2 {
+  color: #d4af37;
+  font-size: 2rem;
+  margin-bottom: 14px;
 }
 
-.player-name {
-  font-weight: 700;
-  overflow-wrap: anywhere;
+.players-gateway p {
+  color: #dddddd;
+  line-height: 1.5;
+  margin-bottom: 24px;
 }
 
-.player-meta {
-  font-size: 0.76rem;
-  color: var(--muted);
+.primary-action {
+  border: 2px solid #d4af37;
+  background: #d4af37;
+  color: #111111;
+  font-size: 1.05rem;
+  font-weight: bold;
+  border-radius: 999px;
+  padding: 14px 26px;
+  cursor: pointer;
+  transition: all 0.22s ease;
 }
 
-.detail-title {
-  margin: 0;
-  font-size: 1.8rem;
+.primary-action:hover {
+  background: #111111;
+  color: #d4af37;
+  box-shadow: 0 0 18px rgba(212,175,55,0.45);
 }
 
-.detail-row {
-  border-bottom: 1px solid rgba(231,229,223,0.1);
-  padding: 8px 0;
-}
+/* =========================
+   LOADING SCREEN
+========================= */
 
-.detail-row strong {
-  display: block;
-  color: var(--gold);
-}
-
-.detail-row span {
-  color: var(--muted);
-}
-
-.award-section {
-  border: 1px solid rgba(231,229,223,0.12);
-  border-radius: 12px;
-  margin-top: 14px;
-  overflow: hidden;
-}
-
-.award-section h3 {
-  margin: 0;
-  padding: 10px 12px;
-  background: rgba(84,66,104,0.34);
-  border-bottom: 1px solid rgba(231,229,223,0.1);
-}
-
-.award-list {
-  padding: 8px 12px 12px;
-}
-
-.award-item {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 6px 0;
-  border-bottom: 1px solid rgba(231,229,223,0.08);
-}
-
-.award-item:last-child {
-  border-bottom: none;
-}
-
-.award-level {
-  color: var(--gold);
-  font-weight: 700;
-}
-
-.note {
-  color: var(--muted);
-}
-
-.view {
-  display: none;
-}
-
-.view.active {
-  display: block;
-}
-
-.mobile-clear-wrap {
-  display: none;
-  margin-bottom: 12px;
-}
-
-body.mobile-focused .mobile-clear-wrap {
-  display: block;
-}
-
-#splashScreen {
+.loading-overlay {
   position: fixed;
   inset: 0;
   z-index: 9999;
+
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
+
   background:
-    linear-gradient(rgba(0,0,0,0.30), rgba(0,0,0,0.72)),
-    url("Ebonmarch.jpg") center center / contain no-repeat,
-    radial-gradient(circle at center, rgba(84,66,104,0.35), transparent 70%),
-    #0b0b0d;
-  opacity: 1;
-  transform: scale(1);
-  transition:
-    opacity 1.8s ease,
-    transform 2.4s ease,
-    filter 2s ease;
+    radial-gradient(circle at center, rgba(212,175,55,0.16), transparent 34%),
+    rgba(0,0,0,0.94);
+
+  transition: opacity 0.35s ease, visibility 0.35s ease;
 }
 
-#splashScreen::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at center, rgba(255,255,255,0.08), transparent 60%);
-  animation: splashPulse 5s ease-in-out infinite;
-}
-
-#splashScreen.fade {
+.loading-overlay.hidden {
   opacity: 0;
-  transform: scale(1.05);
-  filter: blur(8px);
+  visibility: hidden;
   pointer-events: none;
 }
 
-@keyframes splashPulse {
-  0% { opacity: 0.35; }
-  50% { opacity: 0.7; }
-  100% { opacity: 0.35; }
+.loading-banner {
+  width: min(86vw, 620px);
+  max-height: 320px;
+  object-fit: contain;
+
+  animation: loadingPulse 1.6s ease-in-out infinite;
+
+  filter: drop-shadow(0 0 24px rgba(212,175,55,0.35));
 }
 
-.splash-inner {
-  position: absolute;
-  bottom: 8vh;
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(92vw, 520px);
-  padding: 22px;
-  text-align: center;
-  border-radius: 18px;
-  border: 1px solid rgba(231,229,223,0.18);
-  background: rgba(0,0,0,0.42);
-  backdrop-filter: blur(8px);
+.loading-text {
+  margin-top: 18px;
+  color: #d4af37;
+  font-size: 1.1rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
-.loading-bar {
-  width: 220px;
-  height: 10px;
-  margin: 18px auto 0;
-  border-radius: 999px;
-  overflow: hidden;
-  background: rgba(255,255,255,0.08);
-}
+@keyframes loadingPulse {
 
-.loading-fill {
-  width: 40%;
-  height: 100%;
-  background: linear-gradient(90deg, rgba(84,66,104,0.95), rgba(231,229,223,0.9));
-  animation: loadingMove 1.2s infinite ease-in-out;
-}
-
-@keyframes loadingMove {
-  0% { transform: translateX(-120%); }
-  100% { transform: translateX(320%); }
-}
-
-@media (max-width: 980px) {
-  .layout,
-  .stats,
-  .toolbar,
-  .hero {
-    grid-template-columns: 1fr;
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.82;
   }
 
-  .stats {
-    grid-template-columns: repeat(2, 1fr);
+  50% {
+    transform: scale(1.03);
+    opacity: 1;
   }
 
-  .player-grid {
-    grid-template-columns: repeat(2, 1fr);
-    max-height: none;
-  }
-
-  body.mobile-focused .player-grid {
-    grid-template-columns: 1fr;
-  }
-
-  body.mobile-focused .player-card:not(.selected) {
-    display: none;
-  }
 }
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 768px) {
+
+  .home-shell {
+    padding: 14px 12px 40px;
+  }
+
+  .quick-link-card {
+    padding: 20px;
+  }
+
+  .players-gateway {
+    padding: 24px 16px;
+  }
+
+}
+
 </style>
 </head>
+
 <body>
 
-<div id="splashScreen">
-  <div class="splash-inner">
+<!-- =========================
+     LOADING OVERLAY
+========================= -->
+
+<div id="loadingOverlay" class="loading-overlay">
+  <img src="Ebonmarch.jpg"
+       alt="Grand Duchy of Ebonmarch"
+       class="loading-banner">
+
+  <div class="loading-text">
+    Loading Ebonmarch...
+  </div>
+</div>
+
+<!-- =========================
+     MAIN CONTENT
+========================= -->
+
+<main class="home-shell">
+
+  <!-- HERO -->
+  <header class="ebonmarch-hero">
+
+    <img src="Ebonmarch.jpg"
+         alt="Grand Duchy of Ebonmarch"
+         class="hero-banner">
+
     <h1>Grand Duchy of Ebonmarch</h1>
-    <p>Loading Duchy Records...</p>
-    <div class="loading-bar"><div class="loading-fill"></div></div>
-  </div>
-</div>
 
-<main class="shell">
-<header class="hero">
-  <div>
-    <h1>Grand Duchy of Ebonmarch</h1>
-    <p>Ebonmarch active player dashboard powered by cache and JSORK verification.</p>
-  </div>
-  <div class="status"><span id="statusDot" class="dot"></span><span id="statusText">Loading...</span></div>
-</header>
+    <p class="hero-subtitle">
+      Quick access to Ebonmarch resources, community links,
+      documents, and Amtgard information.
+    </p>
 
-<nav class="tabs">
-  <button class="tab-btn active" data-view="roster">Roster</button>
-  <button class="tab-btn" data-view="search">ORK Search</button>
-  <button class="tab-btn" data-view="about">About</button>
-</nav>
+  </header>
 
-<section id="roster" class="view active">
-<div class="stats">
-  <div class="stat-card"><strong id="statRoster">0</strong><span>12 Month Active</span></div>
-  <div class="stat-card"><strong id="statActive">0</strong><span>Shown</span></div>
-  <div class="stat-card"><strong>7</strong><span>Parks</span></div>
-  <div class="stat-card"><strong id="statUpdated">—</strong><span>Updated</span></div>
-</div>
+  <!-- QUICK LINKS -->
+  <section class="quick-links-section">
 
-<div class="layout">
-<div class="panel">
-  <div class="panel-head"><h2>Ebonmarch Players</h2><p>Cache first. JSORK verification second.</p></div>
-  <div class="panel-body">
-    <div class="toolbar">
-      <input id="searchInput" type="search" placeholder="Search persona...">
-      <select id="parkFilter"><option value="">All Parks</option></select>
-      <button id="refreshBtn" class="btn primary">Refresh</button>
+    <h2>Ebonmarch Resources</h2>
+
+    <div class="quick-links-grid">
+
+      <!-- EBONMARCH FACEBOOK -->
+      <a class="quick-link-card"
+         href="https://www.facebook.com/groups/1080583222086036"
+         target="_blank"
+         rel="noopener noreferrer">
+
+        <div class="quick-link-icon">📘</div>
+
+        <div class="quick-link-title">
+          Ebonmarch Facebook
+        </div>
+
+        <div class="quick-link-text">
+          Events, announcements, community discussion,
+          photos, and updates.
+        </div>
+
+      </a>
+
+      <!-- RISING WINDS WEBSITE -->
+      <a class="quick-link-card"
+         href="https://www.therisingwinds.com"
+         target="_blank"
+         rel="noopener noreferrer">
+
+        <div class="quick-link-icon">👑</div>
+
+        <div class="quick-link-title">
+          Rising Winds Website
+        </div>
+
+        <div class="quick-link-text">
+          Kingdom events, chapter listings,
+          official announcements, and resources.
+        </div>
+
+      </a>
+
+      <!-- AMTGARD MAIN -->
+      <a class="quick-link-card"
+         href="https://www.amtgard.com"
+         target="_blank"
+         rel="noopener noreferrer">
+
+        <div class="quick-link-icon">⚔️</div>
+
+        <div class="quick-link-title">
+          Amtgard Official
+        </div>
+
+        <div class="quick-link-text">
+          Main Amtgard website with national
+          resources and information.
+        </div>
+
+      </a>
+
+      <!-- RULES OF PLAY -->
+      <a class="quick-link-card"
+         href="https://www.amtgard.com/documents"
+         target="_blank"
+         rel="noopener noreferrer">
+
+        <div class="quick-link-icon">📖</div>
+
+        <div class="quick-link-title">
+          Rules of Play
+        </div>
+
+        <div class="quick-link-text">
+          Current Rules of Play, class manuals,
+          and official Amtgard documents.
+        </div>
+
+      </a>
+
     </div>
-    <div class="mobile-clear-wrap"><button id="clearMobileSelectionBtn" class="btn primary">Clear Selection</button></div>
-    <div id="playerGrid" class="player-grid"></div>
-  </div>
-</div>
 
-<aside class="panel">
-  <div class="panel-head"><h2>Player Detail</h2><p>Cached detail loads first. JSORK verifies in background.</p></div>
-  <div id="detailBody" class="panel-body"><p class="note">Select a player.</p></div>
-</aside>
-</div>
-</section>
+  </section>
 
-<section id="search" class="view">
-  <div class="panel">
-    <div class="panel-head"><h2>ORK Search</h2><p>Search all ORK players.</p></div>
-    <div class="panel-body">
-      <div class="toolbar" style="grid-template-columns:1fr auto;">
-        <input id="globalSearchInput" type="search" placeholder="Type at least 2 letters...">
-        <button id="globalSearchBtn" class="btn primary">Search</button>
-      </div>
-      <div id="globalResults" class="player-grid"></div>
-    </div>
-  </div>
-</section>
+  <!-- PLAYER GATEWAY -->
+  <section class="players-gateway">
 
-<section id="about" class="view">
-  <div class="panel">
-    <div class="panel-head"><h2>About</h2></div>
-    <div class="panel-body"><p class="note">Uses Google Sheets cache for fast loading and JSORK verification for live ORK lookups.</p></div>
-  </div>
-</section>
+    <h2>View Ebonmarch Players</h2>
+
+    <p>
+      Access Ebonmarch player records, awards,
+      class totals, and sign-in information.
+    </p>
+
+    <button class="primary-action"
+            onclick="goToPlayersPage()">
+
+      Open Player Records
+
+    </button>
+
+  </section>
+
 </main>
 
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script src="jsork.js"></script>
+<!-- =========================
+     SCRIPT
+========================= -->
 
 <script>
-"use strict";
 
-const API_URL = "https://script.google.com/macros/s/AKfycbxO5_gSiFx6aj9nMDrfNvhlbev_CZh383ARjk0pZO-BxhwAbtIVxaO0gKp2cImHPJPK/exec";
-const IS_MOBILE = window.matchMedia("(max-width: 980px)").matches;
-const els = {};
-let activePlayers = [];
-let selectedPlayerKey = "";
-let mobileFocusedPlayer = null;
-let lastFallbackQuery = "";
+function showLoading(message) {
 
-window.addEventListener("DOMContentLoaded", () => {
-  cacheEls();
-  bindEvents();
-  loadDashboard();
+  const overlay = document.getElementById('loadingOverlay');
+  const text = overlay.querySelector('.loading-text');
+
+  if (message) {
+    text.textContent = message;
+  }
+
+  overlay.classList.remove('hidden');
+
+}
+
+function hideLoading() {
+
+  const overlay = document.getElementById('loadingOverlay');
+
+  overlay.classList.add('hidden');
+
+}
+
+function goToPlayersPage() {
+
+  showLoading('Loading Ebonmarch Players...');
+
+  setTimeout(function () {
+
+    window.location.href = 'players.html';
+
+  }, 350);
+
+}
+
+window.addEventListener('load', function () {
+
+  setTimeout(function () {
+
+    hideLoading();
+
+  }, 400);
+
 });
 
-function cacheEls() {
-  els.statusDot = document.getElementById("statusDot");
-  els.statusText = document.getElementById("statusText");
-  els.playerGrid = document.getElementById("playerGrid");
-  els.detailBody = document.getElementById("detailBody");
-  els.searchInput = document.getElementById("searchInput");
-  els.parkFilter = document.getElementById("parkFilter");
-  els.refreshBtn = document.getElementById("refreshBtn");
-  els.statRoster = document.getElementById("statRoster");
-  els.statActive = document.getElementById("statActive");
-  els.statUpdated = document.getElementById("statUpdated");
-  els.globalSearchInput = document.getElementById("globalSearchInput");
-  els.globalSearchBtn = document.getElementById("globalSearchBtn");
-  els.globalResults = document.getElementById("globalResults");
-  els.clearMobileSelectionBtn = document.getElementById("clearMobileSelectionBtn");
-}
-
-function bindEvents() {
-  if (IS_MOBILE) document.body.classList.add("mobile");
-  document.querySelectorAll(".tab-btn").forEach(btn => btn.addEventListener("click", () => showView(btn.dataset.view)));
-  els.searchInput.addEventListener("input", applyRosterFilters);
-  els.parkFilter.addEventListener("change", applyRosterFilters);
-  els.refreshBtn.addEventListener("click", loadDashboard);
-  els.globalSearchBtn.addEventListener("click", runGlobalSearch);
-  els.clearMobileSelectionBtn.addEventListener("click", clearMobileSelection);
-}
-
-function setStatus(type, text) {
-  els.statusDot.className = "dot" + (type === "ready" ? " ready" : type === "error" ? " error" : "");
-  els.statusText.textContent = text;
-}
-
-async function loadDashboard() {
-  setStatus("loading", "Loading cache...");
-  try {
-    const data = await jsonp(API_URL, {});
-    activePlayers = data.players || [];
-    els.statRoster.textContent = activePlayers.length;
-    els.statActive.textContent = activePlayers.length;
-    els.statUpdated.textContent = new Date().toLocaleDateString();
-    populateParkFilter();
-    applyRosterFilters();
-    hideSplash();
-    setStatus("ready", "Ready · Cache Loaded");
-  } catch (err) {
-    setStatus("error", "Cache failed");
-    hideSplash();
-  }
-}
-
-function populateParkFilter() {
-  const parks = [...new Set(activePlayers.map(p => p.park).filter(Boolean))].sort();
-  els.parkFilter.innerHTML = '<option value="">All Parks</option>';
-  parks.forEach(park => {
-    const option = document.createElement("option");
-    option.value = park;
-    option.textContent = park;
-    els.parkFilter.appendChild(option);
-  });
-}
-
-function applyRosterFilters() {
-  if (IS_MOBILE && mobileFocusedPlayer) {
-    renderGrid([mobileFocusedPlayer]);
-    els.statActive.textContent = "1";
-    return;
-  }
-  const search = els.searchInput.value.trim().toLowerCase();
-  const park = els.parkFilter.value.trim().toLowerCase();
-  const players = activePlayers.filter(player => {
-    const matchesSearch = !search || player.name.toLowerCase().includes(search);
-    const matchesPark = !park || player.park.toLowerCase() === park;
-    return matchesSearch && matchesPark;
-  });
-  els.statActive.textContent = players.length;
-  renderGrid(players);
-  if (search.length >= 2 && players.length === 0 && search !== lastFallbackQuery) {
-    lastFallbackQuery = search;
-    searchJsorkFallback(search);
-  }
-}
-
-function renderGrid(players) {
-  els.playerGrid.innerHTML = "";
-  if (!players.length) {
-    els.playerGrid.innerHTML = '<p class="note">No players found.</p>';
-    return;
-  }
-  players.forEach(player => {
-    const card = document.createElement("button");
-    card.className = "player-card" + (selectedPlayerKey === playerKey(player) ? " selected" : "");
-    card.innerHTML = `<span class="player-name">${escapeHtml(player.name)}</span><span class="player-meta">${escapeHtml(player.park || "")}</span>`;
-    card.addEventListener("click", () => selectPlayer(player));
-    els.playerGrid.appendChild(card);
-  });
-}
-
-async function selectPlayer(player) {
-  selectedPlayerKey = playerKey(player);
-  if (IS_MOBILE) {
-    mobileFocusedPlayer = player;
-    document.body.classList.add("mobile-focused");
-  }
-  applyRosterFilters();
-  els.detailBody.innerHTML = '<p class="note">Loading player...</p>';
-  try {
-    const detail = await jsonp(API_URL, { action: "detail", id: player.id || player.name });
-    renderPlayerDetail(detail);
-    verifyPlayerWithJsork(player, detail);
-  } catch (err) {
-    els.detailBody.innerHTML = '<p class="note">Could not load player detail.</p>';
-    verifyPlayerWithJsork(player, null);
-  }
-}
-
-function renderPlayerDetail(detail) {
-  const awards = detail.awards || [];
-  const masterhoods = detail.masterhoods || [];
-  const paragons = detail.paragons || [];
-  els.detailBody.innerHTML = `
-    <h3 class="detail-title">${escapeHtml(detail.name || "Unknown")}</h3>
-    <div class="detail-row"><strong>Park</strong><span>${escapeHtml(detail.park || "")}</span></div>
-    <div class="detail-row"><strong>Last Sign-In</strong><span>${escapeHtml(detail.lastSignIn || "")}</span></div>
-    ${renderAwardSection("Award Levels", awards)}
-    ${renderSimpleSection("Masterhoods", masterhoods)}
-    ${renderSimpleSection("Paragons", paragons)}
-  `;
-}
-
-function renderAwardSection(title, rows) {
-  if (!rows.length) return `<div class="award-section"><h3>${title}</h3><div class="award-list"><p class="note">None listed.</p></div></div>`;
-  return `<div class="award-section"><h3>${title}</h3><div class="award-list">${rows.map(row => `<div class="award-item"><span>${escapeHtml(row.name)}</span><span class="award-level">${escapeHtml(String(row.count || row.value || ""))}</span></div>`).join("")}</div></div>`;
-}
-
-function renderSimpleSection(title, rows) {
-  if (!rows.length) return `<div class="award-section"><h3>${title}</h3><div class="award-list"><p class="note">None listed.</p></div></div>`;
-  return `<div class="award-section"><h3>${title}</h3><div class="award-list">${rows.map(row => `<div class="award-item"><span>${escapeHtml(typeof row === "string" ? row : row.name)}</span></div>`).join("")}</div></div>`;
-}
-
-function clearMobileSelection() {
-  mobileFocusedPlayer = null;
-  selectedPlayerKey = "";
-  document.body.classList.remove("mobile-focused");
-  els.detailBody.innerHTML = '<p class="note">Select a player.</p>';
-  applyRosterFilters();
-}
-
-async function searchJsorkFallback(query) {
-  if (!window.jsork || !jsork.searchservice || !jsork.searchservice.searchPlayer) return;
-  try {
-    const results = await jsork.searchservice.searchPlayer(query);
-    if (!results || !results.length) return;
-    const players = results.slice(0, 10).map(item => ({
-      id: item.MundaneId || item.PlayerId || "",
-      name: item.Persona || item.Name || "Unknown",
-      park: item.Park || "",
-      kingdom: item.Kingdom || ""
-    }));
-    renderGrid(players);
-  } catch (err) {}
-}
-
-async function runGlobalSearch() {
-  if (!window.jsork || !jsork.searchservice || !jsork.searchservice.searchPlayer) return;
-  const query = els.globalSearchInput.value.trim();
-  if (query.length < 2) return;
-  els.globalResults.innerHTML = '<p class="note">Searching ORK...</p>';
-  try {
-    const results = await jsork.searchservice.searchPlayer(query);
-    const players = results.slice(0, 20).map(item => ({
-      id: item.MundaneId || item.PlayerId || "",
-      name: item.Persona || item.Name || "Unknown",
-      park: item.Park || "",
-      kingdom: item.Kingdom || ""
-    }));
-    els.globalResults.innerHTML = "";
-    players.forEach(player => {
-      const card = document.createElement("button");
-      card.className = "player-card";
-      card.innerHTML = `<span class="player-name">${escapeHtml(player.name)}</span><span class="player-meta">${escapeHtml(player.park || "")}</span>`;
-      card.addEventListener("click", () => {
-        showView("roster");
-        selectPlayer(player);
-        queueRefresh(player, "global-search-selected");
-      });
-      els.globalResults.appendChild(card);
-    });
-  } catch (err) {
-    els.globalResults.innerHTML = '<p class="note">Search failed.</p>';
-  }
-}
-
-async function verifyPlayerWithJsork(player, detail) {
-  if (!window.jsork || !jsork.player || !jsork.player.getAwards) return;
-  if (!player.id) {
-    queueRefresh(player, "missing-id-or-cache-miss");
-    return;
-  }
-  try {
-    const liveAwards = await jsork.player.getAwards(Number(player.id), jsork.awardIDs.ALL);
-    const cachedCount = detail ? ((detail.awards || []).length + (detail.masterhoods || []).length + (detail.paragons || []).length) : 0;
-    const liveCount = Array.isArray(liveAwards) ? liveAwards.length : 0;
-    if (Math.abs(liveCount - cachedCount) > 0) {
-      queueRefresh(player, "award-mismatch");
-    }
-  } catch (err) {}
-}
-
-async function queueRefresh(player, reason) {
-  try {
-    await jsonp(API_URL, {
-      action: "queueRefresh",
-      playerId: player.id || "",
-      playerName: player.name || "",
-      park: player.park || "",
-      kingdom: player.kingdom || "",
-      reason
-    });
-  } catch (err) {}
-}
-
-function showView(id) {
-  document.querySelectorAll(".view").forEach(view => view.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
-  document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.toggle("active", btn.dataset.view === id));
-}
-
-function hideSplash() {
-  const splash = document.getElementById("splashScreen");
-  if (!splash) return;
-  splash.classList.add("fade");
-  setTimeout(() => splash.remove(), 1800);
-}
-
-function playerKey(player) {
-  return String(player.id || player.name).toLowerCase();
-}
-
-function jsonp(url, params = {}) {
-  return new Promise((resolve, reject) => {
-    const callbackName = "jsonp_" + Date.now() + "_" + Math.random().toString(36).slice(2);
-    const query = new URLSearchParams({ ...params, callback: callbackName });
-    const script = document.createElement("script");
-    let timeoutId;
-    window[callbackName] = data => {
-      clearTimeout(timeoutId);
-      delete window[callbackName];
-      script.remove();
-      resolve(data);
-    };
-    script.onerror = () => {
-      clearTimeout(timeoutId);
-      delete window[callbackName];
-      script.remove();
-      reject(new Error("JSONP failed"));
-    };
-    timeoutId = setTimeout(() => {
-      delete window[callbackName];
-      script.remove();
-      reject(new Error("JSONP timed out"));
-    }, 30000);
-    script.src = url + "?" + query.toString();
-    document.body.appendChild(script);
-  });
-}
-
-function escapeHtml(value) {
-  return String(value || "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
 </script>
+
 </body>
 </html>
+```
